@@ -9,6 +9,7 @@
 
 enum operator_e
 {
+	OP_NONE = 0;
 	OP_ADD = 1,		// addition					+
 	OP_SUB = 2,		// substraction				-
 	OP_MUL = 3,		// multiplication			* or () with no operator

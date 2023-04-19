@@ -42,9 +42,15 @@ private:
 	void		skipSpace(const string& command, int& i_ref);
 	void		tokenization(const string& command);
 	bool		isParenthese(const string& command, int& level_ref, int& i_ref);
-	bool		isOperator(const string& command, const int& level, int& i_ref);
+	bool		isOperator(const string& command, int& level_ref, int& i_ref);
 	bool		isAns(const string& command, const int& level, int& i_ref);
 	bool		isNumber(const string& command, const int& level, int& i_ref);
+	void		tokenParsing();
+	void		addParentheseMultiplication();
+	bool		exceptionTwoOp(list<Block>::iterator it);
+	void		sqrtmMerge(list<Block>::iterator it);
+	void		negativeNumMerge(list<Block>::iterator it);
+
 
 public:
 				Calc();

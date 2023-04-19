@@ -68,7 +68,6 @@ void	Calc::calculatorLoop()
 	
 	while (command != "EXIT" && command != "QUIT")
 	{
-		command = "";
 		cout << "> ";
 		getline(cin, command);
 		if (cin.eof())
@@ -80,7 +79,9 @@ void	Calc::calculatorLoop()
 			{
 				validParenthese(command);
 				tokenization(command);
-				//blocks calculation
+				addParentheseMultiplication();
+				tokenParsing();
+				//calculation loop
 				//cout answer
 			}
 			catch(const CalcException::SyntaxExcep& e) 
@@ -91,6 +92,7 @@ void	Calc::calculatorLoop()
 				{cerr << RED << e.what() << COLORDEF <<endl;}
 		}
 		clearBlocks();
+		command = "";
 	}
 }
 
@@ -172,7 +174,7 @@ bool	Calc::isParenthese(const string& command, int& level_ref, int& i_ref)
 	return false;
 }
 
-bool	Calc::isOperator(const string& command, const int& level, int& i_ref)
+bool	Calc::isOperator(const string& command, int& level_ref, int& i_ref)
 {
 	for (int i_op = 1; i_op < NB_OP_LIST; i_op++)
 	{
@@ -180,7 +182,13 @@ bool	Calc::isOperator(const string& command, const int& level, int& i_ref)
 			&& command.substr(i_ref, operator_list[i_op].length()) == operator_list[i_op])
 		{
 			_blocks.back().setOp(i_op);
-			_blocks.back().setLevel(level);
+			_blocks.back().setLevel(level_ref);
+			if(i_op >= 6)
+			{
+				if (i_ref > 0 && command.at(i_ref - 1) == ' ')
+					_blocks.back().setSpaceBefore = true;
+				level_ref++;
+			}
 			i_ref += operator_list[i_op].length();
 			return true;
 		}
@@ -217,9 +225,107 @@ bool	Calc::isNumber(const string& command, const int& level, int& i_ref)
 		throw CalcException::SyntaxExcep();
 	else if (numBeforeDot == true)
 	{
-		_blocks.setRhnum(stof(command.substr(i, i_offset)));
-		_blocks.setLevel(level);
+		_blocks.back().setRhnum(stof(command.substr(i_ref, i_offset)));
+		_blocks.back().setLevel(level);
+		if (i_ref > 0 && command.at(i_ref - 1) == ' ')
+			_blocks.back().setSpaceBefore = true;
 	}
 	i_ref += i_offset;
 	return numBeforeDot;
+}
+
+//Error case
+//1) operator with number lower level -> (2 +)2
+//2) two simultaneous operator that is not exception -> +-3
+//3) finish with operator -> 2+2+
+void	Calc::tokenParsing()
+{
+	list<Block>::iterator it = _blocks.begin();
+
+	while (it != _blocks.end())
+	{
+		if (it == _blocks.begin())
+		{
+			if (it->getOp() != OP_NONE || it->getOp() != OP_SQR || it->getOp() != OP_SQRM)
+			{
+				if (exceptionTwoOp(it) == false)
+					throw CalcException::SyntaxExcep();
+			}
+		}
+		else if (it[1] == _blocks.end())
+		{
+			if (it->getOp() != OP_NONE)
+				throw CalcException::SyntaxExcep();
+		}
+		else
+		{
+			if (it->getOp() != OP_NONE)
+			{
+				if ((it[-1]->getOp() == OP_NONE && it[-1]->getLevel() < it->getLevel())
+					&& (it[1]->getOp() == OP_NONE && it[1]->getLevel() < it->getLevel()))
+					throw CalcException::SyntaxExcep();
+				if (it[1]->getOp() != OP_NONE && it[1]->getOp != OP_SUB)
+				{
+					if (exceptionTwoOp(it) == false)
+						throw CalcException::SyntaxExcep();
+				}
+			}
+		}
+		it++;
+	}
+}
+
+//return true if need to skip first it
+bool	Calc::exceptionTwoOp(list<Block>::iterator it)
+{
+	if (it->getOp() == OP_SUB
+		&& it->getLevel() == it[1]->getLevel()
+		&& it[1]->getSpaceBefore == false))
+	{
+		if (it[1]->getOp == OP_SQR)
+		{
+			sqrtmMerge(it);
+			return true;
+		}
+		else if (it[1]->getOp == OP_NONE)
+		{
+			negativeNumMerge(it);
+			return true;
+		}
+	}
+	return false;
+}
+
+void	Calc::sqrtmMerge(list<Block>::iterator it)
+{
+	it->setOp(7);
+	_blocks.erase(it[1]);
+}
+
+void	Calc::negativeNumMerge(list<Block>::iterator it)
+{
+	it->setOp(OP_NONE);
+	it->setRhnum(it[1]->getRhnum() * -1);
+	_blocks.erase(it[1]);
+}
+
+//Insert une multiplication entre deux nombre qui ne sont pas au meme level
+// au level le plus bas
+void	Calc::addParentheseMultiplication()
+{
+	for (list<Block>::iterator it = _blocks.begin(); it[1] != _blocks.end(); it++)
+	{
+		if (it->getOp() == 0 && it[1]->getOp() == 0
+				&& it->getLevel() != it[1]->getLevel())
+		{
+			Block newMultBlock;
+			newMultBlock.setOp(OP_MUL);
+			if (it->getLevel() > it[1]->getLevel())
+				newMultBlock = it->getLevel();
+			else
+				newMultBlock = it[1]->getLevel();			
+			_blocks.insert(it[1], newMultBlock);
+			it++;
+		}
+	}
 }
