@@ -24,7 +24,7 @@ Block::~Block() {}
 const int&		Block::getLevel() const 				{return _level;}
 const int&		Block::getOp() const 					{return _op;}
 const float&	Block::getRhnum() const					{return _rhnum;}
-const float&	Block::getSpaceBefore() const			{return _spaceBefore;}
+const bool&		Block::getSpaceBefore() const			{return _spaceBefore;}
 
 void	Block::setLevel(const int& level)				{_level = level;}
 void	Block::setOp(const int& op)						{_op = op;}

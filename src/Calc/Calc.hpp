@@ -42,12 +42,12 @@ private:
 
 
 	void		validParenthese(const string& command) const;
-	void		skipSpace(const string& command, int& i_ref);
+	void		skipSpace(const string& command, size_t& i_ref);
 	void		tokenization(const string& command);
-	bool		isParenthese(const string& command, int& level_ref, int& i_ref);
-	bool		isOperator(const string& command, int& level_ref, int& i_ref);
-	bool		isAns(const string& command, const int& level, int& i_ref);
-	bool		isNumber(const string& command, const int& level, int& i_ref);
+	bool		isParenthese(const string& command, int& level_ref, size_t& i_ref);
+	bool		isOperator(const string& command, int& level_ref, size_t& i_ref);
+	bool		isAns(const string& command, const int& level, size_t& i_ref);
+	bool		isNumber(const string& command, const int& level, size_t& i_ref);
 	void		tokenParsing();
 	void		addParentheseMultiplication();
 	bool		exceptionTwoOp(list<Block>::iterator it);
@@ -56,11 +56,11 @@ private:
 	void		calculationLoop();
 	void		operation();
 	void		levelDown();
-	void		coutDemarche() const;
-	int			higherLevel() const;
-	list<Block>::iterator	getHigherOperation() const;
+	void		coutDemarche();
+	int			higherLevel();
+	list<Block>::iterator	getHigherOperation();
 
-	int			coutAnswer() const;
+	void		coutAnswer() const;
 
 public:
 				Calc();
