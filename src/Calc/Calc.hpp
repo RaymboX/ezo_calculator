@@ -3,9 +3,10 @@
 
 # include <iostream>
 # include <list>
+# include <stdlib.h>
 
-# include "colors.hpp"
-# include "Block.hpp"
+# include "../../include/colors.hpp"
+# include "../Block/Block.hpp"
 
 using namespace std;
 
@@ -30,13 +31,7 @@ private:
 
 	void		clearBlocks();
 
-
-
-
-
-
-
-
+	void		calculatorLoop();
 
 public:
 				Calc();

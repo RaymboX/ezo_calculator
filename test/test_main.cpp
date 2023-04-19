@@ -1,0 +1,20 @@
+#define DOCTEST_CONFIG_IMPLEMENT
+#define DOCTEST_CONFIG_TREAT_CHAR_STAR_AS_STRING
+
+#include "test_header.hpp"
+
+int main(int argc, char** argv) {
+	doctest::Context context;
+
+	context.applyCommandLine(argc, argv);
+	context.setOption("no-breaks", true);
+
+	// Show all successful tests
+	// context.setOption("success", true);
+
+
+	int res = context.run();
+	if (context.shouldExit())
+		return res;
+	return res;
+}
