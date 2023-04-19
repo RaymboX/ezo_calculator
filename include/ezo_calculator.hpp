@@ -5,6 +5,8 @@
 # include <list>
 # include <stdlib.h>
 
+# define NB_OP_LIST 8
+
 enum operator_e
 {
 	OP_ADD = 1,		// addition					+

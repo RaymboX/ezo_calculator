@@ -1,6 +1,6 @@
 #include "Calc.hpp"
 
-const string	Calc::operator_list[8] = 
+const string	Calc::operator_list[NB_OP_LIST] = 
 {
 	"",
 	"+",
@@ -64,10 +64,11 @@ void	Calc::trimSpaceFB(string& command_ref)
 
 void	Calc::calculatorLoop()
 {
-	string	command = "";
+	string	command;
 	
 	while (command != "EXIT" && command != "QUIT")
 	{
+		command = "";
 		cout << "> ";
 		getline(cin, command);
 		if (cin.eof())
@@ -78,7 +79,7 @@ void	Calc::calculatorLoop()
 			try
 			{
 				validParenthese(command);
-				//block record
+				tokenization(command);
 				//blocks calculation
 				//cout answer
 			}
@@ -127,18 +128,26 @@ bool	Calc::textCommand(const string& command) const
 	return false;
 }
 
-void	Calc::readCommand(const string& command)
+void	tokenization(const string& command)
 {
-	int level = 0;
 	int i = 0;
+	int level = 0;
 
 	while (i < command.length())
 	{
 		_blocks.push_back();
-		
-		i = blockRecord(command, level, i);
-
-		skipSpace(i);
+		if (isParenthese(command, level, i) == false)
+		{
+			if (isOperator(command, level, i) == false)
+			{
+				if (isAns(command, level, i) == false)
+				{
+					if (isNumber(command, level, i) == false)
+						throw CalcException::SyntaxExcep();
+				}
+			}
+		}
+		skipSpace(command, i);
 	}
 }
 
@@ -149,24 +158,68 @@ void	Calc::skipSpace(skipSpace(const string& command, int& i_ref)
 }
 
 
-
-bool	Calc::isParenthese(const string& command, int& level_ref, int& i_offset_ref)
+bool	Calc::isParenthese(const string& command, int& level_ref, int& i_ref)
 {
-	if (command.at(i_offset_ref) == '(' || command.at(i_offset_ref) == ')' )
+	if (command.at(i_ref) == '(' || command.at(i_ref) == ')' )
 	{
-		if (command.at(i_offset_ref) == '(')
+		if (command.at(i_ref) == '(')
 			level_ref++;
 		else
 			level_ref--;
-		if (level_ref < 0)
-			throw CalcException::SyntaxExcep();
-		i_offset_ref += 1;
+		i_ref++;
 		return true;
 	}
 	return false;
 }
 
-bool	Calc::isOperator(const string& command, int& level_ref, int& i_offset_ref)
+bool	Calc::isOperator(const string& command, const int& level, int& i_ref)
 {
-	if (command_ref.length() > i_offset + )
+	for (int i_op = 1; i_op < NB_OP_LIST; i_op++)
+	{
+		if (i_ref + operator_list[i_op].length() < command.length()
+			&& command.substr(i_ref, operator_list[i_op].length()) == operator_list[i_op])
+		{
+			_blocks.back().setOp(i_op);
+			_blocks.back().setLevel(level);
+			i_ref += operator_list[i_op].length();
+			return true;
+		}
+	}
+	return false;
+}
+
+bool	Calc::isNumber(const string& command, const int& level, int& i_ref)
+{
+	bool	dot = false;
+	bool	numBeforeDot = false;
+	bool	numAfterDot = false;
+	int		i_offset = 0;
+
+	while (i_ref + len < command.length() && command.at(i_ref + len) != ' '
+			&& ((command.at(i_ref + len) == '.') || (isDigit(command.at(i_ref + len)) == true)))
+	{
+		if (command.at(i_ref + len) == '.')
+		{
+			if (dot == true || numBeforeDot == false)
+				throw CalcException::SyntaxExcep();
+			dot = true;
+		}
+		else if(isDigit(command.at(i_ref + len)) == true)
+		{
+			if (dot == false)
+				numBeforeDot = true;
+			else
+				numAfterDot = true;
+		}
+		len++;
+	}
+	if (dot = true && numAfterDot == false)
+		throw CalcException::SyntaxExcep();
+	else if (numBeforeDot == true)
+	{
+		_blocks.setRhnum(stof(command.substr(i, i_offset)));
+		_blocks.setLevel(level);
+	}
+	i_ref += i_offset;
+	return numBeforeDot;
 }

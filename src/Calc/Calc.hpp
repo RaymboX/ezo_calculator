@@ -19,7 +19,7 @@ private:
 	int			_ans;
 	block_t		_blocks;
 	
-	static const string	operator_list[8];
+	static const string	operator_list[NB_OP_LIST];
 
 				Calc(const Calc& rhs);
 	Calc&		operator=(const Calc& rhs);
@@ -37,12 +37,14 @@ private:
 
 	void		trimSpaceFB(string& command_ref);
 
-	void		readCommand(const string& command);
+
 	void		validParenthese(const string& command) const;
 	void		skipSpace(const string& command, int& i_ref);
-
-	bool		isParenthese(const string& command, int& level_ref, int& i_offset_ref);
-	bool		isOperator(const string& command, int& level_ref, int& i_offset_ref);
+	void		tokenization(const string& command);
+	bool		isParenthese(const string& command, int& level_ref, int& i_ref);
+	bool		isOperator(const string& command, const int& level, int& i_ref);
+	bool		isAns(const string& command, const int& level, int& i_ref);
+	bool		isNumber(const string& command, const int& level, int& i_ref);
 
 public:
 				Calc();
