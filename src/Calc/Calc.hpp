@@ -15,7 +15,6 @@ typedef	list<Block> block_t;
 class Calc
 {
 private:
-	int			_actualLevel;
 	int			_ans;
 	block_t		_blocks;
 
@@ -25,13 +24,17 @@ private:
 	
 	void		routine();
 	
-	void		intro();
-	void		help();
-	void		shutDown();
+	void		intro() const;
+	void		help() const;
+	void		shutDown() const;
 
 	void		clearBlocks();
 
 	void		calculatorLoop();
+
+	bool		textCommand(const std::string& command) const;
+
+	void		trimFB(std::string& command_ref);
 
 public:
 				Calc();
