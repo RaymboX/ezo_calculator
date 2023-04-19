@@ -111,12 +111,11 @@ $(NAME): $(OBJS)
 			@make tools
 			
 init:
-			@mkdir -p $(OBJS_DIR)
+			@mkdir -p $(OBJ_DIR)
 .PHONY: init
 
 clean:
-			@$(RM) $(OBJS)
-			@$(RM) $(OBJS_DIR)
+			@$(RM) $(OBJ_DIR)
 			@echo "$RObjects removed$W"
 .PHONY: clean
 
