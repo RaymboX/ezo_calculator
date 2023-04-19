@@ -1,5 +1,17 @@
 #include "Calc.hpp"
 
+const string	Calc::operator_list[8] = 
+{
+	"",
+	"+",
+	"-",
+	"*",
+	"/",
+	"^",
+	"sqrt(",
+	"-sqrt("
+};
+
 Calc::Calc(): _ans(0) {routine();}
 
 Calc::~Calc()
@@ -44,7 +56,7 @@ void	Calc::clearBlocks()
 }
 
 //remove space at the front and back of command
-void	Calc::trimFB(std::string& command_ref)
+void	Calc::trimSpaceFB(string& command_ref)
 {
 	command_ref.erase(0, command_ref.find_first_not_of(" "));
 	command_ref.erase(command_ref.find_last_not_of(" ") + 1);
@@ -60,22 +72,51 @@ void	Calc::calculatorLoop()
 		getline(cin, command);
 		if (cin.eof())
 			exit(0);
-		trimFB(command);
+		trimSpaceFB(command);
 		if (!(textCommand(command)))
 		{
-			//try
-			//line parsing
-			//block record
-			//blocks calculation
-			//cout answer
+			try
+			{
+				validParenthese(command);
+				//block record
+				//blocks calculation
+				//cout answer
+			}
+			catch(const CalcException::SyntaxExcep& e) 
+				{cerr << RED << e.what() << COLORDEF <<endl;}
+			catch(const CalcException::Divide0Excep& e) 
+				{cerr << RED << e.what() << COLORDEF <<endl;}
+			catch(const CalcException::NonRealExcep& e) 
+				{cerr << RED << e.what() << COLORDEF <<endl;}
 		}
-		//catch error syntax
-		//catch error not divide zero
-		//catch error nonreal answer (squareroot negative)
+		clearBlocks();
 	}
 }
 
-bool	Calc::textCommand(const std::string& command) const
+void	Calc::validParenthese(const string& command) const
+{
+	bool	error = false;
+	bool	level = 0;
+
+	for {int i = 0; i < command.length(); i++}
+	{
+		if (command.at(i) == '(')
+		{
+			error = true;
+			level++;
+		}
+		else if (isDigit(command.at(i))
+			error = false;
+		else if (command.at(i) == ')')
+		{
+			level--;
+			if (error == true || level < 0)
+				throw CalcException::SyntaxExcep();			
+		}
+	}
+}
+
+bool	Calc::textCommand(const string& command) const
 {
 	if (command == "HELP" || command == "QUIT" || command == "EXIT")
 	{
@@ -86,4 +127,46 @@ bool	Calc::textCommand(const std::string& command) const
 	return false;
 }
 
+void	Calc::readCommand(const string& command)
+{
+	int level = 0;
+	int i = 0;
 
+	while (i < command.length())
+	{
+		_blocks.push_back();
+		
+		i = blockRecord(command, level, i);
+
+		skipSpace(i);
+	}
+}
+
+void	Calc::skipSpace(skipSpace(const string& command, int& i_ref)
+{
+	while (command.at(i_ref) == ' ')
+		i_ref++;
+}
+
+
+
+bool	Calc::isParenthese(const string& command, int& level_ref, int& i_offset_ref)
+{
+	if (command.at(i_offset_ref) == '(' || command.at(i_offset_ref) == ')' )
+	{
+		if (command.at(i_offset_ref) == '(')
+			level_ref++;
+		else
+			level_ref--;
+		if (level_ref < 0)
+			throw CalcException::SyntaxExcep();
+		i_offset_ref += 1;
+		return true;
+	}
+	return false;
+}
+
+bool	Calc::isOperator(const string& command, int& level_ref, int& i_offset_ref)
+{
+	if (command_ref.length() > i_offset + )
+}

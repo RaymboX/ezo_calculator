@@ -7,6 +7,7 @@
 
 # include "../../include/colors.hpp"
 # include "../Block/Block.hpp"
+# include "CalcException.hpp"
 
 using namespace std;
 
@@ -17,13 +18,13 @@ class Calc
 private:
 	int			_ans;
 	block_t		_blocks;
+	
+	static const string	operator_list[8];
 
 				Calc(const Calc& rhs);
 	Calc&		operator=(const Calc& rhs);
 
-	
-	void		routine();
-	
+
 	void		intro() const;
 	void		help() const;
 	void		shutDown() const;
@@ -32,13 +33,22 @@ private:
 
 	void		calculatorLoop();
 
-	bool		textCommand(const std::string& command) const;
+	bool		textCommand(const string& command) const;
 
-	void		trimFB(std::string& command_ref);
+	void		trimSpaceFB(string& command_ref);
+
+	void		readCommand(const string& command);
+	void		validParenthese(const string& command) const;
+	void		skipSpace(const string& command, int& i_ref);
+
+	bool		isParenthese(const string& command, int& level_ref, int& i_offset_ref);
+	bool		isOperator(const string& command, int& level_ref, int& i_offset_ref);
 
 public:
 				Calc();
 	virtual		~Calc();
+
+	void		routine();
 };
 
 #endif
