@@ -1,6 +1,6 @@
 #include "Calc.hpp"
 
-const string	Calc::operator_list[NB_OP_LIST] = 
+const string	Calc::_operator_list[NB_OP_LIST] = 
 {
 	"",
 	"+",
@@ -11,6 +11,8 @@ const string	Calc::operator_list[NB_OP_LIST] =
 	"sqrt(",
 	"-sqrt("
 };
+
+bool Calc::_demarche = false;
 
 Calc::Calc(): _ans(0) {routine();}
 
@@ -153,6 +155,20 @@ void	tokenization(const string& command)
 	}
 }
 
+bool	Calc::isAns(const string& command, const int& level, int& i_ref)
+{
+	if (command.substr(i_ref, 3) == "ans")
+	{
+		_blocks.back().setRhnum(_ans);
+		_blocks.back().setOp(OP_NONE);
+		_blocks.back().setLevel(level);
+		if (i_ref > 0 && command.at(i_ref - 1) == ' ')
+			_blocks.back().setSpaceBefore(true);
+		return true;
+	}
+	return false;
+}
+
 void	Calc::skipSpace(skipSpace(const string& command, int& i_ref)
 {
 	while (command.at(i_ref) == ' ')
@@ -178,8 +194,8 @@ bool	Calc::isOperator(const string& command, int& level_ref, int& i_ref)
 {
 	for (int i_op = 1; i_op < NB_OP_LIST; i_op++)
 	{
-		if (i_ref + operator_list[i_op].length() < command.length()
-			&& command.substr(i_ref, operator_list[i_op].length()) == operator_list[i_op])
+		if (i_ref + _operator_list[i_op].length() < command.length()
+			&& command.substr(i_ref, _operator_list[i_op].length()) == _operator_list[i_op])
 		{
 			_blocks.back().setOp(i_op);
 			_blocks.back().setLevel(level_ref);
@@ -189,7 +205,7 @@ bool	Calc::isOperator(const string& command, int& level_ref, int& i_ref)
 					_blocks.back().setSpaceBefore = true;
 				level_ref++;
 			}
-			i_ref += operator_list[i_op].length();
+			i_ref += _operator_list[i_op].length();
 			return true;
 		}
 	}
@@ -328,4 +344,170 @@ void	Calc::addParentheseMultiplication()
 			it++;
 		}
 	}
+}
+
+void	Calc::calculationLoop();
+{
+	list<Block>::iterator it;
+
+	while (_blocks.size() != 1)
+	{
+		operation();
+		levelDown();
+		coutDemarche();
+	}
+}
+
+int	Calc::higherLevel() const
+{
+	int level = 0;
+	for (list<Block>::iterator it = _blocks.begin(); it != _blocks.end(); it++)
+	{
+		if (it->getLevel() > level)
+			level = it->getLevel();
+	}
+	return level;
+}
+
+list<Block>::iterator	Calc::getHigherOperation() const
+{
+	list<Block>::iterator higherOp = _blocks.begin();
+	for (list<Block>::iterator it = _blocks.begin(); it != _blocks.end(); it++)
+	{
+		if ((it->getOp != OP_NONE && higherOp->getOp() == OP_NONE)
+			|| (it->getLevel() >= higherOp->getLevel()
+				&& it->getOp() > higherOp->getOp()))
+			higherOp = it;
+	}
+	return higherOp;
+}
+
+void	Calc::operation()
+{
+	list<Block>::iterator higherOp = getHigherOperation();
+	switch	(higherOp->getOp())
+	{
+		case OP_ADD:
+		{
+			it[-1]->getRhnum() += it[1]->getRhnum();
+			_blocks.erase(it[1]);
+			_blocks.erase(it); 
+			break;
+		}
+		case OP_SUB:
+		{
+			it[-1]->getRhnum() -= it[1]->getRhnum();
+			_blocks.erase(it[1]);
+			_blocks.erase(it); 
+			break;
+		}
+		case OP_MUL:
+		{
+			it[-1]->getRhnum() *= it[1]->getRhnum();
+			_blocks.erase(it[1]);
+			_blocks.erase(it); 
+			break;
+		}
+		case OP_DIV:
+		{
+			if (it[1]->getRhnum() == 0)
+				throw CalcException::Divide0Excep();
+			it[-1]->getRhnum() += it[1]->getRhnum();
+			_blocks.erase(it[1]);
+			_blocks.erase(it); 
+			break;
+		}
+		case OP_POW:
+		{
+			it[-1]->getRhnum() = pow(it[-1]->getRhnum(), it[1]->getRhnum());
+			_blocks.erase(it[1]);
+			_blocks.erase(it); 
+			break;
+		}
+		case OP_SQR:
+		{
+			if (it[1]->getRhnum() < 0)
+				throw CalcException::NonRealExcep();
+			it->getRhnum() = sqrt(it[1]->getRhnum());
+			it->setOp() = OP_NONE;
+			_blocks.erase(it[1]);
+			break;
+		}
+		case OP_SQRM:
+		{
+			if (it[1]->getRhnum() < 0)
+				throw CalcException::NonRealExcep();
+			it->getRhnum() = sqrt(it[1]->getRhnum()) * -1;
+			it->setOp() = OP_NONE;
+			_blocks.erase(it[1]);
+			break;
+		}
+	}
+}
+
+void	Calc::levelDown()
+{
+	bool	rhsIsLower;
+	bool	lhsIsLower;
+	list<Block>::iterator it = _blocks.begin();
+
+	if (_blocks.size() > 1)
+	{
+		while (it != _blocks.end())
+		{
+			lhsIsLower = false;
+			if (it == _blocks.begin() || it[-1]->getLevel() < it->getLevel())
+				lhsIsLower = true;
+			rhsIsLower = false;
+			if (it[1] == _blocks.end() || it[1]->getLevel() < it->getLevel())
+				rhsIsLower = true;
+			if (lhsIsLower == true && rhsIsLower == true)
+			{
+				it->setLevel(it->getLevel - 1)
+				it = _blocks.begin();
+			}
+			else
+				it++;
+		}
+	}
+}
+
+void	Calc::coutAnswer() const
+{
+	cout << "La reponse est: " << _blocks.begin()->getRhnum() << endl;
+}
+
+void	Calc::coutDemarche() const
+{
+	list<Block>::iterator last_it;
+	int level_offset;
+	
+	for (list<Block>::iterator it = _blocks.begin(); it != _blocks.end(); it++)
+	{
+		if (it != _blocks.begin())
+		{
+			next_it = it - 1;
+			level_offset = 0;
+			if (it->getOp() >= OP_SQR)
+				level_offset++;
+			while (next_it->getLevel() + level_offset != it->getLevel())
+			{
+				if (next_it->getLevel() + level_offset < it->getLevel())
+				{
+					level_offset++;
+					cout << "( ";
+				}
+				else
+				{
+					level_offset--;
+					cout << ") ";
+				}
+			}
+		}
+		if (it->getOp() == OP_NONE)
+			cout << it->getRhnum() << " ";
+		else
+			cout << _operator_list[it->getOp()] << " ";
+	}
+	cout << endl;
 }

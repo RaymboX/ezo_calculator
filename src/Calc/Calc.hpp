@@ -4,10 +4,12 @@
 # include <iostream>
 # include <list>
 # include <stdlib.h>
+# include <cmath>
 
 # include "../../include/colors.hpp"
 # include "../Block/Block.hpp"
 # include "CalcException.hpp"
+# include "../../include/ezo_calculator.hpp"
 
 using namespace std;
 
@@ -19,7 +21,8 @@ private:
 	int			_ans;
 	block_t		_blocks;
 	
-	static const string	operator_list[NB_OP_LIST];
+	static const string	_operator_list[NB_OP_LIST];
+	static bool	_demarche;
 
 				Calc(const Calc& rhs);
 	Calc&		operator=(const Calc& rhs);
@@ -50,7 +53,14 @@ private:
 	bool		exceptionTwoOp(list<Block>::iterator it);
 	void		sqrtmMerge(list<Block>::iterator it);
 	void		negativeNumMerge(list<Block>::iterator it);
+	void		calculationLoop();
+	void		operation();
+	void		levelDown();
+	void		coutDemarche() const;
+	int			higherLevel() const;
+	list<Block>::iterator	getHigherOperation() const;
 
+	int			coutAnswer() const;
 
 public:
 				Calc();
