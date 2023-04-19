@@ -78,13 +78,14 @@ HEADERS += $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.hpp)) #in class
 
 #SYSTEM VAR---------------------------------------------------------------------
 
-CFLAGS 			= 	-Wall -Werror -Wextra
-CC				= 	g++
-CC_DEBUG		=	g++ -g
+CFLAGS 			:= 	-Wall -Werror -Wextra
+CC				:= 	g++
+CC_DEBUG		:=	g++ -g
 
-RM				= 	rm -rf
-LEAK_CMD		=	leaks --atExit --
-VALGRIND_CMD	=	valgrind --leak-check=full
+RM				:= 	rm -rf
+MKDIR			:= 	mkdir -p
+LEAK_CMD		:=	leaks --atExit --
+VALGRIND_CMD	:=	valgrind --leak-check=full
 
 
 R = $(shell tput -Txterm setaf 1)
@@ -111,7 +112,8 @@ $(NAME): $(OBJS)
 			@make tools
 			
 init:
-			@mkdir -p $(OBJ_DIR)
+			@$(MKDIR) $(OBJ_DIR)
+			@$(MKDIR) $(OBJ_DIRS)
 .PHONY: init
 
 clean:
