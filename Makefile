@@ -12,22 +12,6 @@
 #PROGRAM NAME-------------------------------------------------------------------
 
 NAME 			=	ezoCalc
-#CPP_LIST-----------------------------------------------------------------------
-#  find ./*.cpp -type f | cut -c3- | sed 's/$/ \\/'
-
-SRCS_FILES		=	main.cpp \
-					Block/Block.cpp \
-					Calc/Calc.cpp
-
-
-#HPP_LIST-----------------------------------------------------------------------
-#  find ./*.hpp -type f | cut -c3- | sed 's/$/ \\/'
-
-HEADERS			=	src/Block/Block.hpp \
-					src/Calc/Calc.hpp \
-					include/colors.hpp
-
-
 
 #PROJECT EXPLANATION------------------------------------------------------------
 define EXPLANATION
@@ -74,23 +58,23 @@ make tools		-> Affiche les outils disponibles (ceci)
 endef
 export TOOLS
 
-#TEST---------------------------------------------------------------------------
 
-TEST_NAME		= 	
+#FILES AND DIR DEFINE-----------------------------------------------------------------------
+SRC_DIR := src
+OBJ_DIR := obj
+HEAD_DIR:= include
 
-#TEST_CPP_LIST
-TEST_SRCS		=	
+DIRS = $(shell find $(SRC_DIR) -type d -printf '%P\n') #list of file in src
+SRC_DIRS := $(addprefix $(SRC_DIR)/, $(DIRS)) #src/DIRS
+OBJ_DIRS := $(addprefix $(OBJ_DIR)/, $(DIRS)) #obj/DIRS
 
-TEST_FILES		=	
+SRCS = $(wildcard $(SRC_DIR)/*.cpp) #main.cpp
+SRCS += $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.cpp)) #all cpp in class
 
-#MAINTEST-----------------------------------------------------------------------
+OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS)) #all srcs.cpp are now src.o
 
-
-
-#DIRECTORY----------------------------------------------------------------------
-
-SRCS_DIR		=	src
-OBJS_DIR		= 	obj
+HEADERS = $(wildcard $(HEAD_DIR)/*.hpp) #in include
+HEADERS += $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.hpp)) #in class
 
 #SYSTEM VAR---------------------------------------------------------------------
 
@@ -110,15 +94,9 @@ C = $(shell tput -Txterm setaf 6)
 Y = $(shell tput -Txterm setaf 3)
 Z = $(shell tput -Txterm setaf 5)
 
-#SRCS---------------------------------------------------------------------------
-SRCS			=	$(addprefix $(SRCS_DIR)/, $(SRCS_FILES))
+#COMPILATION--------------------------------------------------------------------
 
-#OBJ----------------------------------------------------------------------------
-
-OBJS 			= 	$(SRCS:$(SRCS_DIR)%.cpp=$(OBJS_DIR)%.o)
-#OBJS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
-
-$(OBJS_DIR)/%.o:%.cpp $(HEADERS)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(HEADERS)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 #RULES--------------------------------------------------------------------------
