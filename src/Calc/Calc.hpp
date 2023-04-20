@@ -55,6 +55,7 @@ private:
 	bool		exceptionTwoOp(list<Block>::iterator it);
 	void		sqrtmMerge(list<Block>::iterator it);
 	void		negativeNumMerge(list<Block>::iterator it);
+	void		negativeParenthese(list<Block>::iterator it);
 	void		calculationLoop();
 	void		operation();
 	void		levelDown();

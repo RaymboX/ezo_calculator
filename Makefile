@@ -64,7 +64,8 @@ SRC_DIR := src
 OBJ_DIR := obj
 HEAD_DIR:= include
 
-DIRS = $(shell find $(SRC_DIR) -type d -printf '%P\n') #list of file in src
+#DIRS = $(shell find $(SRC_DIR) -type d -printf '%P\n') #list of file in src
+DIRS = $(shell find $(SRC_DIR) -type d | sed 's/$(SRC_DIR)\///g' | sed -n '1!p')
 SRC_DIRS := $(addprefix $(SRC_DIR)/, $(DIRS)) #src/DIRS
 OBJ_DIRS := $(addprefix $(OBJ_DIR)/, $(DIRS)) #obj/DIRS
 

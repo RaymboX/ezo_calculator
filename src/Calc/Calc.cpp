@@ -283,14 +283,25 @@ void	Calc::tokenParsing()
 	while (it != _blocks.end())
 	{
 		//sleep(1);
+		coutBlocks();
 		next_it = next(it);
+
+		if (it->getOp()== OP_NONE && next_it->getOp() == OP_NONE
+				&& it->getLevel() == next_it->getLevel())
+					throw CalcException::SyntaxExcep();
+
 		if (it == _blocks.begin())
 		{
-			//cout << "check for first if operation" << endl;
 			if (it->getOp() > OP_NONE && it->getOp() < OP_SQR)
 			{
-				//cout << "pas un chiffre au debut" << "it->getOp():" << it->getOp() << endl;
-				if (exceptionTwoOp(it) == false)
+				if (it->getOp() == OP_SUB && next(it)->getOp() == OP_NONE)
+				{
+					if (it->getLevel() < next(it)->getLevel())
+						negativeParenthese(it);
+					else
+						negativeNumMerge(it);
+				}
+				else if (exceptionTwoOp(it) == false) 
 					throw CalcException::SyntaxExcep();
 			}
 		}
@@ -310,7 +321,7 @@ void	Calc::tokenParsing()
 				if ((prev_it->getOp() == OP_NONE && prev_it->getLevel() < it->getLevel())
 					&& (next_it->getOp() == OP_NONE && next_it->getLevel() < it->getLevel()))
 					throw CalcException::SyntaxExcep();
-				if (it->getOp() < OP_SQR && !(it->getOp() == OP_SUB && next_it->getOp() == OP_SQR))
+				if (it->getOp() < OP_SQR && next_it->getOp() != OP_SQR)
 				{
 					if (it->getOp() != OP_NONE && next_it->getOp() != OP_NONE)
 					{
@@ -388,30 +399,45 @@ void	Calc::negativeNumMerge(list<Block>::iterator it)
 	_blocks.erase(next_it);
 }
 
+//remplace -( en debut par -1*(
+void	Calc::negativeParenthese(list<Block>::iterator it)
+{
+	Block	temp_num;
+	temp_num.setRhnum(-1);
+	temp_num.setLevel(it->getLevel());
+	_blocks.insert(it, temp_num);
+	Block	temp_sub;
+	it->setOp(OP_MUL);
+}
+
 //Insert une multiplication entre deux nombre qui ne sont pas au meme level
 // au level le plus bas
 void	Calc::addParentheseMultiplication()
 {
-	//cout << __FUNCTION__ << endl;
+	cout << __FUNCTION__ << endl;
 	list<Block>::iterator next_it;
 	for (list<Block>::iterator it = _blocks.begin(); next(it) != _blocks.end(); it++)
 	{
 		next_it = next(it);
-		if (it->getOp() == 0 && next_it->getOp() == 0
+		cout << "it->getOp():" << it->getOp()
+				<< " next_it->getOp():" << next_it->getOp()
+				<< " it->getLevel():" << it->getLevel()
+				<< " next_it->getLevel():" << next_it->getLevel() << endl;
+		if (it->getOp() == OP_NONE && next_it->getOp() == OP_NONE
 				&& it->getLevel() != next_it->getLevel())
 		{
 			Block newMultBlock;
 			newMultBlock.setOp(OP_MUL);
-			//cout << "before deciding level side it->getLevel:" << it->getLevel() << " next_it->getLevel:" << next_it->getLevel() << endl;
-			//coutBlocks();
+			cout << "before deciding level side it->getLevel:" << it->getLevel() << " next_it->getLevel:" << next_it->getLevel() << endl;
+			coutBlocks();
 			if (it->getLevel() < next_it->getLevel())
 			{
-			//	cout << "it choice" << endl;
+				cout << "it choice" << endl;
 				newMultBlock.setLevel(it->getLevel());
 			}
 			else
 			{
-			//	cout << "next_it choice" << endl;
+				cout << "next_it choice" << endl;
 				newMultBlock.setLevel(next_it->getLevel());			
 			}
 			_blocks.insert(next_it, newMultBlock);
@@ -427,7 +453,8 @@ void	Calc::calculationLoop()
 
 	while (_blocks.size() != 1)
 	{
-		//coutBlocks();
+		cout << endl;
+		coutBlocks();
 		operation();
 		coutDemarche();
 		levelDown();
