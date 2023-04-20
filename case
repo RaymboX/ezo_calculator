@@ -10,7 +10,7 @@
 	 * - number(same level)
 	 * - sqrt (same level)
 3) 3 (*) 3 or 3(3 *) 5 -> not complete parenthese
-4) 3*(43)
+4) 3*(43) || 3(-2)
 
 
 fail now
@@ -19,3 +19,6 @@ fail now
 -3 (3 + 4)
 -4 (sqrt(4) * 4)
 (sqrt(4))(sqrt(4))
+3(-3)
+sqrt(-2)
+3(-2) -> 3 * (-2)

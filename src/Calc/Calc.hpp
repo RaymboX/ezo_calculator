@@ -52,7 +52,7 @@ private:
 	bool		isNumber(const string& command, const int& level, size_t& i_ref);
 	void		tokenParsing();
 	void		addParentheseMultiplication();
-	bool		exceptionTwoOp(list<Block>::iterator it);
+	void		ParseNegativeNumber();
 	void		sqrtmMerge(list<Block>::iterator it);
 	void		negativeNumMerge(list<Block>::iterator it);
 	void		negativeParenthese(list<Block>::iterator it);

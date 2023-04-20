@@ -87,6 +87,7 @@ void	Calc::calculatorLoop()
 				validParenthese(command);
 				tokenization(command);
 				addParentheseMultiplication();
+				ParseNegativeNumber();
 				tokenParsing();
 				calculationLoop();
 				_ans = _blocks.begin()->getRhnum();
@@ -171,7 +172,7 @@ bool	Calc::isAns(const string& command, const int& level, size_t& i_ref)
 	//cout << __FUNCTION__ << endl;
 	if (command.substr(i_ref, 3) == "ans")
 	{
-		cout << "token ans" << endl;
+		//cout << "token ans" << endl;
 		_blocks.back().setRhnum(_ans);
 		_blocks.back().setOp(OP_NONE);
 		_blocks.back().setLevel(level);
@@ -278,108 +279,34 @@ void	Calc::tokenParsing()
 {
 	//cout << __FUNCTION__ << endl;
 	list<Block>::iterator it = _blocks.begin();
-	list<Block>::iterator prev_it;
-	list<Block>::iterator next_it;
-	while (it != _blocks.end())
+	//coutBlocks();
+	if ((it->getOp() > OP_NONE && it->getOp() < OP_SQR) 
+		|| (next(it) != _blocks.end() && 
+			it->getOp() == OP_NONE && next(it)->getOp() == OP_NONE))
 	{
-		//sleep(1);
-		coutBlocks();
-		next_it = next(it);
-
-		if (it->getOp()== OP_NONE && next_it->getOp() == OP_NONE
-				&& it->getLevel() == next_it->getLevel())
-					throw CalcException::SyntaxExcep();
-
-		if (it == _blocks.begin())
+		//cout << "begin parse fail it->getOp():" << it->getOp() <<endl;
+		throw CalcException::SyntaxExcep();
+	}
+	it++;
+	while (next(it) != _blocks.end() && it != _blocks.end())
+	{
+		//coutBlocks();
+		if ((it->getOp() == OP_NONE 
+				&& (prev(it)->getOp() == OP_NONE || next(it)->getOp() == OP_NONE))
+			|| (it->getOp() > OP_NONE && it->getOp() < OP_SQR
+				&& ((prev(it)->getOp() > OP_NONE)
+					|| (next(it)->getOp() > OP_NONE && next(it)->getOp() < OP_SQR))))
 		{
-			if (it->getOp() > OP_NONE && it->getOp() < OP_SQR)
-			{
-				if (it->getOp() == OP_SUB && next(it)->getOp() == OP_NONE)
-				{
-					if (it->getLevel() < next(it)->getLevel())
-						negativeParenthese(it);
-					else
-						negativeNumMerge(it);
-				}
-				else if (exceptionTwoOp(it) == false) 
-					throw CalcException::SyntaxExcep();
-			}
-		}
-		else if (next_it == _blocks.end())
-		{
-			//cout << "check for last if operation" << endl;
-			if (it->getOp() != OP_NONE)
-				throw CalcException::SyntaxExcep();
-		}
-		else
-		{
-			//cout << "middle check" << endl;
-			if (it->getOp() != OP_NONE)
-			{
-				
-				prev_it = prev(it);
-				if ((prev_it->getOp() == OP_NONE && prev_it->getLevel() < it->getLevel())
-					&& (next_it->getOp() == OP_NONE && next_it->getLevel() < it->getLevel()))
-					throw CalcException::SyntaxExcep();
-				if (it->getOp() < OP_SQR && next_it->getOp() != OP_SQR)
-				{
-					if (it->getOp() != OP_NONE && next_it->getOp() != OP_NONE)
-					{
-						//cout << "deux operations consecutives" << endl;
-						if (exceptionTwoOp(it) == false)
-							throw CalcException::SyntaxExcep();
-					}
-				}
-			}
+			//cout << "middle parse fail it->getOp():" << it->getOp() << endl;
+			throw CalcException::SyntaxExcep();
 		}
 		it++;
 	}
-}
-
-//return true if need to skip first it
-bool	Calc::exceptionTwoOp(list<Block>::iterator it)
-{
-	//cout << __FUNCTION__ << endl;
-	list<Block>::iterator next_it = next(it);
-	//coutBlocks();
-	//cout << "exeption for it->getOp:" << it->getOp() << endl;
-	if (it->getLevel() != next_it->getLevel())
-		return false;
-	//cout << "same level" << endl;
-	//case1: -sqrt
-	if (it->getOp() == OP_SUB && next_it->getOp() == OP_SQR && next_it->getSpaceBefore() == false)
+	if (it->getOp() != OP_NONE)
 	{
-		sqrtmMerge(it);
-		return true;
+		//cout << "last parse fail it->getOp():" << it->getOp() <<endl;
+		throw CalcException::SyntaxExcep();
 	}
-	
-	list<Block>::iterator next2_it = next(next_it);
-	
-	if (it != _blocks.begin() && it->getOp() != OP_NONE && next2_it != _blocks.end()
-			&& prev(it)->getLevel() == it->getLevel()
-			&& (prev(it)->getOp() == OP_NONE || prev(it)->getOp() >= OP_SQR))
-	{
-		//cout << "check for case + -sqrt" << endl;
-		//case2:+ -sqrt
-		if (next_it->getOp() == OP_SUB && next2_it->getOp() == OP_SQR 
-				&& next2_it->getSpaceBefore() == false)
-		{
-			cout << "sqrtmerge" << endl;
-			sqrtmMerge(next_it);
-			return true;
-		}
-		
-		//case3:+ -2
-		//cout << "check for case + -2" << endl;
-		if (next_it->getOp() == OP_SUB && next2_it->getOp() == OP_NONE)
-		{
-			//cout << "negativeNumMerge" << endl;
-			negativeNumMerge(next_it);
-			return true;
-		}
-	}
-
-	return false;
 }
 
 void	Calc::sqrtmMerge(list<Block>::iterator it)
@@ -414,30 +341,31 @@ void	Calc::negativeParenthese(list<Block>::iterator it)
 // au level le plus bas
 void	Calc::addParentheseMultiplication()
 {
-	cout << __FUNCTION__ << endl;
+	//cout << __FUNCTION__ << endl;
 	list<Block>::iterator next_it;
 	for (list<Block>::iterator it = _blocks.begin(); next(it) != _blocks.end(); it++)
 	{
 		next_it = next(it);
-		cout << "it->getOp():" << it->getOp()
+		/* cout << "it->getOp():" << it->getOp()
 				<< " next_it->getOp():" << next_it->getOp()
 				<< " it->getLevel():" << it->getLevel()
-				<< " next_it->getLevel():" << next_it->getLevel() << endl;
-		if (it->getOp() == OP_NONE && next_it->getOp() == OP_NONE
+				<< " next_it->getLevel():" << next_it->getLevel() << endl; */
+		if (it->getOp() == OP_NONE 
+				&& (next_it->getOp() == OP_NONE || next_it->getOp() >= OP_SQR || next_it->getOp() == OP_SUB)
 				&& it->getLevel() != next_it->getLevel())
 		{
 			Block newMultBlock;
 			newMultBlock.setOp(OP_MUL);
-			cout << "before deciding level side it->getLevel:" << it->getLevel() << " next_it->getLevel:" << next_it->getLevel() << endl;
-			coutBlocks();
+			//cout << "before deciding level side it->getLevel:" << it->getLevel() << " next_it->getLevel:" << next_it->getLevel() << endl;
+			//coutBlocks();
 			if (it->getLevel() < next_it->getLevel())
 			{
-				cout << "it choice" << endl;
+				//cout << "it choice" << endl;
 				newMultBlock.setLevel(it->getLevel());
 			}
 			else
 			{
-				cout << "next_it choice" << endl;
+				//cout << "next_it choice" << endl;
 				newMultBlock.setLevel(next_it->getLevel());			
 			}
 			_blocks.insert(next_it, newMultBlock);
@@ -446,6 +374,31 @@ void	Calc::addParentheseMultiplication()
 	}
 }
 
+void	Calc::ParseNegativeNumber()
+{
+	for (list<Block>::iterator it = _blocks.begin(); next(it) != _blocks.end(); it++)
+	{
+		if (it->getOp() == OP_SUB)
+		{ 
+			if (next(it)->getSpaceBefore() == false
+				&& (it == _blocks.begin() 
+					|| prev(it)->getLevel() < it->getLevel()
+					|| prev(it)->getOp() > OP_NONE)
+				&& (next(it)->getOp() == OP_NONE || next(it)->getOp() >= OP_SQR)
+				&& it->getLevel() == next(it)->getLevel())
+			{
+				if (next(it)->getOp() == OP_NONE)
+					negativeNumMerge(it);
+				else if (next(it)->getOp() >= OP_SQR)
+					sqrtmMerge(it);
+			}
+		}
+	}
+}
+
+
+
+
 void	Calc::calculationLoop()
 {
 	//cout << __FUNCTION__ << endl;
@@ -453,8 +406,8 @@ void	Calc::calculationLoop()
 
 	while (_blocks.size() != 1)
 	{
-		cout << endl;
-		coutBlocks();
+		//cout << endl;
+		//coutBlocks();
 		operation();
 		coutDemarche();
 		levelDown();
