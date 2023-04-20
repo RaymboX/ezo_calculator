@@ -24,31 +24,31 @@ Calc::~Calc()
 void	Calc::routine()
 {
 	intro();
-	help();
 	calculatorLoop();
 	shutDown();
 }
 
 void	Calc::intro() const
 {
-	cout << "Bonjour et bienvenue sur la calculatrice RaymboX pour EZO" << endl;
+	cout << PURPLE << "Bonjour et bienvenue sur la calculatrice RaymboX pour EZO" << endl
+		<< "Pour de l'aide, inscrivez <HELP>, pour quitter <QUIT> ou <EXIT>" << COLORDEF << endl;
 }
 
 void	Calc::help() const
 {
-	cout << "Aide:" << endl
+	cout << CYAN << "Aide:" << endl
 		<< "- Operations acceptées: <+, -, *, /, ^, sqrt()>" << endl
 		<< "- Vous pouvez utiliser les parenthèses () pour la priorité des opérations" << endl
 		<< "- Si vous ne mettez pas d'opérateur devant ou après une parenthèse," << endl
 		<< "    l'opération sera considéré une multiplication" << endl
 		<< "- Vous pouvez utiliser <ans> pour récupérer le dernier résultat valide" << endl
 		<< "- Pour revoir cette aide, inscrivez <HELP>" << endl
-		<< "- Pour quitter, inscrivez <QUIT> ou <EXIT>" << endl;
+		<< "- Pour quitter, inscrivez <QUIT> ou <EXIT>" << COLORDEF << endl;
 }
 
 void	Calc::shutDown() const
 {
-	cout << endl << "Merci d'avoir utilisé la calculatrice RaymboX pour EZO. Au plaisir!" << endl;
+	cout << endl << PURPLE << "Merci d'avoir utilisé la calculatrice RaymboX pour EZO. Au plaisir!" << endl;
 }
 
 void	Calc::clearBlocks()
@@ -80,7 +80,7 @@ void	Calc::calculatorLoop()
 		if (cin.eof())
 			exit(0);
 		trimSpaceFB(command);
-		if (!(textCommand(command)))
+		if (command.length() != 0 && !(textCommand(command)))
 		{
 			try
 			{
@@ -89,6 +89,7 @@ void	Calc::calculatorLoop()
 				addParentheseMultiplication();
 				tokenParsing();
 				calculationLoop();
+				_ans = _blocks.begin()->getRhnum();
 				coutAnswer();
 			}
 			catch(const CalcException::SyntaxExcep& e) 
@@ -170,11 +171,13 @@ bool	Calc::isAns(const string& command, const int& level, size_t& i_ref)
 	//cout << __FUNCTION__ << endl;
 	if (command.substr(i_ref, 3) == "ans")
 	{
+		cout << "token ans" << endl;
 		_blocks.back().setRhnum(_ans);
 		_blocks.back().setOp(OP_NONE);
 		_blocks.back().setLevel(level);
 		if (i_ref > 0 && command.at(i_ref - 1) == ' ')
 			_blocks.back().setSpaceBefore(true);
+		i_ref += 3;
 		return true;
 	}
 	return false;
