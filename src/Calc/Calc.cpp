@@ -53,6 +53,7 @@ void	Calc::shutDown() const
 
 void	Calc::clearBlocks()
 {
+	//cout << __FUNCTION__ << endl;
 	while (_blocks.begin() != _blocks.end())
 		_blocks.erase(_blocks.begin());
 }
@@ -60,18 +61,22 @@ void	Calc::clearBlocks()
 //remove space at the front and back of command
 void	Calc::trimSpaceFB(string& command_ref)
 {
+	//cout << __FUNCTION__ << endl;
 	command_ref.erase(0, command_ref.find_first_not_of(" "));
 	command_ref.erase(command_ref.find_last_not_of(" ") + 1);
 }
 
 void	Calc::calculatorLoop()
 {
+	//cout << __FUNCTION__ << endl;
+	
 	string	command;
 	
 	while (command != "EXIT" && command != "QUIT")
 	{
-		cout << "> ";
+		cout << WHITE << "> ";
 		getline(cin, command);
+		cout << COLORDEF;
 		if (cin.eof())
 			exit(0);
 		trimSpaceFB(command);
@@ -83,8 +88,8 @@ void	Calc::calculatorLoop()
 				tokenization(command);
 				addParentheseMultiplication();
 				tokenParsing();
-				//calculation loop
-				//cout answer
+				calculationLoop();
+				coutAnswer();
 			}
 			catch(const CalcException::SyntaxExcep& e) 
 				{cerr << RED << e.what() << COLORDEF <<endl;}
@@ -94,12 +99,12 @@ void	Calc::calculatorLoop()
 				{cerr << RED << e.what() << COLORDEF <<endl;}
 		}
 		clearBlocks();
-		command = "";
 	}
 }
 
 void	Calc::validParenthese(const string& command) const
 {
+	//cout << __FUNCTION__ << endl;
 	bool	error = false;
 	int		level = 0;
 
@@ -119,10 +124,13 @@ void	Calc::validParenthese(const string& command) const
 				throw CalcException::SyntaxExcep();			
 		}
 	}
+	if (level != 0)
+		throw CalcException::SyntaxExcep();			
 }
 
 bool	Calc::textCommand(const string& command) const
 {
+	//cout << __FUNCTION__ << endl;
 	if (command == "HELP" || command == "QUIT" || command == "EXIT")
 	{
 		if (command == "HELP")
@@ -134,15 +142,16 @@ bool	Calc::textCommand(const string& command) const
 
 void	Calc::tokenization(const string& command)
 {
+	//cout << __FUNCTION__ << endl;
 	size_t i = 0;
 	int level = 0;
 	Block	blank_block;
 
 	while (i < command.length())
 	{
-		_blocks.push_back(blank_block);
 		if (isParenthese(command, level, i) == false)
 		{
+			_blocks.push_back(blank_block);
 			if (isOperator(command, level, i) == false)
 			{
 				if (isAns(command, level, i) == false)
@@ -158,6 +167,7 @@ void	Calc::tokenization(const string& command)
 
 bool	Calc::isAns(const string& command, const int& level, size_t& i_ref)
 {
+	//cout << __FUNCTION__ << endl;
 	if (command.substr(i_ref, 3) == "ans")
 	{
 		_blocks.back().setRhnum(_ans);
@@ -172,13 +182,15 @@ bool	Calc::isAns(const string& command, const int& level, size_t& i_ref)
 
 void	Calc::skipSpace(const string& command, size_t& i_ref)
 {
-	while (command.at(i_ref) == ' ')
+	//cout << __FUNCTION__ << endl;
+	while (i_ref < command.length() && command.at(i_ref) == ' ')
 		i_ref++;
 }
 
 
 bool	Calc::isParenthese(const string& command, int& level_ref, size_t& i_ref)
 {
+	//cout << __FUNCTION__ << endl;
 	if (command.at(i_ref) == '(' || command.at(i_ref) == ')' )
 	{
 		if (command.at(i_ref) == '(')
@@ -193,15 +205,18 @@ bool	Calc::isParenthese(const string& command, int& level_ref, size_t& i_ref)
 
 bool	Calc::isOperator(const string& command, int& level_ref, size_t& i_ref)
 {
+	//cout << __FUNCTION__ << endl;
 	for (int i_op = 1; i_op < NB_OP_LIST; i_op++)
 	{
 		if (i_ref + _operator_list[i_op].length() < command.length()
 			&& command.substr(i_ref, _operator_list[i_op].length()) == _operator_list[i_op])
 		{
+			//cout << "token operation OP:" << i_op << endl;
 			_blocks.back().setOp(i_op);
 			_blocks.back().setLevel(level_ref);
-			if(i_op >= 6)
+			if(i_op >= OP_SQR)
 			{
+				//cout << "is a sqrt" << endl;
 				if (i_ref > 0 && command.at(i_ref - 1) == ' ')
 					_blocks.back().setSpaceBefore(true);
 				level_ref++;
@@ -215,11 +230,11 @@ bool	Calc::isOperator(const string& command, int& level_ref, size_t& i_ref)
 
 bool	Calc::isNumber(const string& command, const int& level, size_t& i_ref)
 {
+	//cout << __FUNCTION__ << endl;
 	bool	dot = false;
 	bool	numBeforeDot = false;
 	bool	numAfterDot = false;
-	int		i_offset = 0;
-	int		len = 0;
+	size_t	len = 0;
 
 	while (i_ref + len < command.length() && command.at(i_ref + len) != ' '
 			&& ((command.at(i_ref + len) == '.') || (isdigit(command.at(i_ref + len)) == true)))
@@ -243,12 +258,12 @@ bool	Calc::isNumber(const string& command, const int& level, size_t& i_ref)
 		throw CalcException::SyntaxExcep();
 	else if (numBeforeDot == true)
 	{
-		_blocks.back().setRhnum(stof(command.substr(i_ref, i_offset)));
+		_blocks.back().setRhnum(stof(command.substr(i_ref, len)));
 		_blocks.back().setLevel(level);
 		if (i_ref > 0 && command.at(i_ref - 1) == ' ')
 			_blocks.back().setSpaceBefore(true);
 	}
-	i_ref += i_offset;
+	i_ref += len;
 	return numBeforeDot;
 }
 
@@ -258,38 +273,48 @@ bool	Calc::isNumber(const string& command, const int& level, size_t& i_ref)
 //3) finish with operator -> 2+2+
 void	Calc::tokenParsing()
 {
+	//cout << __FUNCTION__ << endl;
 	list<Block>::iterator it = _blocks.begin();
 	list<Block>::iterator prev_it;
 	list<Block>::iterator next_it;
-
 	while (it != _blocks.end())
 	{
+		//sleep(1);
 		next_it = next(it);
 		if (it == _blocks.begin())
 		{
-			if (it->getOp() != OP_NONE || it->getOp() != OP_SQR || it->getOp() != OP_SQRM)
+			//cout << "check for first if operation" << endl;
+			if (it->getOp() > OP_NONE && it->getOp() < OP_SQR)
 			{
+				//cout << "pas un chiffre au debut" << "it->getOp():" << it->getOp() << endl;
 				if (exceptionTwoOp(it) == false)
 					throw CalcException::SyntaxExcep();
 			}
 		}
 		else if (next_it == _blocks.end())
 		{
+			//cout << "check for last if operation" << endl;
 			if (it->getOp() != OP_NONE)
 				throw CalcException::SyntaxExcep();
 		}
 		else
 		{
+			//cout << "middle check" << endl;
 			if (it->getOp() != OP_NONE)
 			{
+				
 				prev_it = prev(it);
 				if ((prev_it->getOp() == OP_NONE && prev_it->getLevel() < it->getLevel())
 					&& (next_it->getOp() == OP_NONE && next_it->getLevel() < it->getLevel()))
 					throw CalcException::SyntaxExcep();
-				if (next_it->getOp() != OP_NONE && next_it->getOp() != OP_SUB)
+				if (it->getOp() < OP_SQR && !(it->getOp() == OP_SUB && next_it->getOp() == OP_SQR))
 				{
-					if (exceptionTwoOp(it) == false)
-						throw CalcException::SyntaxExcep();
+					if (it->getOp() != OP_NONE && next_it->getOp() != OP_NONE)
+					{
+						//cout << "deux operations consecutives" << endl;
+						if (exceptionTwoOp(it) == false)
+							throw CalcException::SyntaxExcep();
+					}
 				}
 			}
 		}
@@ -300,27 +325,52 @@ void	Calc::tokenParsing()
 //return true if need to skip first it
 bool	Calc::exceptionTwoOp(list<Block>::iterator it)
 {
+	//cout << __FUNCTION__ << endl;
 	list<Block>::iterator next_it = next(it);
-	if (it->getOp() == OP_SUB
-		&& it->getLevel() == next_it->getLevel()
-		&& next_it->getSpaceBefore() == false)
+	//coutBlocks();
+	//cout << "exeption for it->getOp:" << it->getOp() << endl;
+	if (it->getLevel() != next_it->getLevel())
+		return false;
+	//cout << "same level" << endl;
+	//case1: -sqrt
+	if (it->getOp() == OP_SUB && next_it->getOp() == OP_SQR && next_it->getSpaceBefore() == false)
 	{
-		if (next_it->getOp() == OP_SQR)
+		sqrtmMerge(it);
+		return true;
+	}
+	
+	list<Block>::iterator next2_it = next(next_it);
+	
+	if (it != _blocks.begin() && it->getOp() != OP_NONE && next2_it != _blocks.end()
+			&& prev(it)->getLevel() == it->getLevel()
+			&& (prev(it)->getOp() == OP_NONE || prev(it)->getOp() >= OP_SQR))
+	{
+		//cout << "check for case + -sqrt" << endl;
+		//case2:+ -sqrt
+		if (next_it->getOp() == OP_SUB && next2_it->getOp() == OP_SQR 
+				&& next2_it->getSpaceBefore() == false)
 		{
-			sqrtmMerge(it);
+			cout << "sqrtmerge" << endl;
+			sqrtmMerge(next_it);
 			return true;
 		}
-		else if (next_it->getOp() == OP_NONE)
+		
+		//case3:+ -2
+		//cout << "check for case + -2" << endl;
+		if (next_it->getOp() == OP_SUB && next2_it->getOp() == OP_NONE)
 		{
-			negativeNumMerge(it);
+			//cout << "negativeNumMerge" << endl;
+			negativeNumMerge(next_it);
 			return true;
 		}
 	}
+
 	return false;
 }
 
 void	Calc::sqrtmMerge(list<Block>::iterator it)
 {
+	//cout << __FUNCTION__ << endl;
 	list<Block>::iterator next_it = next(it);
 	it->setOp(7);
 	_blocks.erase(next_it);
@@ -328,6 +378,7 @@ void	Calc::sqrtmMerge(list<Block>::iterator it)
 
 void	Calc::negativeNumMerge(list<Block>::iterator it)
 {
+	//cout << __FUNCTION__ << endl;
 	list<Block>::iterator next_it = next(it);
 	it->setOp(OP_NONE);
 	it->setRhnum(next_it->getRhnum() * -1);
@@ -338,6 +389,7 @@ void	Calc::negativeNumMerge(list<Block>::iterator it)
 // au level le plus bas
 void	Calc::addParentheseMultiplication()
 {
+	//cout << __FUNCTION__ << endl;
 	list<Block>::iterator next_it;
 	for (list<Block>::iterator it = _blocks.begin(); next(it) != _blocks.end(); it++)
 	{
@@ -347,10 +399,18 @@ void	Calc::addParentheseMultiplication()
 		{
 			Block newMultBlock;
 			newMultBlock.setOp(OP_MUL);
-			if (it->getLevel() > next_it->getLevel())
+			//cout << "before deciding level side it->getLevel:" << it->getLevel() << " next_it->getLevel:" << next_it->getLevel() << endl;
+			//coutBlocks();
+			if (it->getLevel() < next_it->getLevel())
+			{
+			//	cout << "it choice" << endl;
 				newMultBlock.setLevel(it->getLevel());
+			}
 			else
+			{
+			//	cout << "next_it choice" << endl;
 				newMultBlock.setLevel(next_it->getLevel());			
+			}
 			_blocks.insert(next_it, newMultBlock);
 			it++;
 		}
@@ -359,18 +419,23 @@ void	Calc::addParentheseMultiplication()
 
 void	Calc::calculationLoop()
 {
+	//cout << __FUNCTION__ << endl;
 	list<Block>::iterator it;
 
 	while (_blocks.size() != 1)
 	{
+		//coutBlocks();
 		operation();
-		levelDown();
 		coutDemarche();
+		levelDown();
+		//if (_blocks.size() != 1)
+			
 	}
 }
 
 int	Calc::higherLevel()
 {
+	//cout << __FUNCTION__ << endl;
 	int level = 0;
 	for (list<Block>::iterator it = _blocks.begin(); it != _blocks.end(); it++)
 	{
@@ -382,12 +447,15 @@ int	Calc::higherLevel()
 
 list<Block>::iterator	Calc::getHigherOperation()
 {
+	//cout << __FUNCTION__ << endl;
 	list<Block>::iterator higherOp = _blocks.begin();
+	int index = -1;
 	for (list<Block>::iterator it = _blocks.begin(); it != _blocks.end(); it++)
 	{
+		index++;
 		if ((it->getOp() != OP_NONE && higherOp->getOp() == OP_NONE)
-			|| (it->getLevel() >= higherOp->getLevel()
-				&& it->getOp() > higherOp->getOp()))
+				|| ((it->getLevel() > higherOp->getLevel())
+				|| ((it->getLevel() == higherOp->getLevel()) && (it->getOp() > higherOp->getOp()))))
 			higherOp = it;
 	}
 	return higherOp;
@@ -395,6 +463,7 @@ list<Block>::iterator	Calc::getHigherOperation()
 
 void	Calc::operation()
 {
+	//cout << __FUNCTION__ << endl;
 	list<Block>::iterator it = getHigherOperation();
 	list<Block>::iterator prev_it = prev(it);
 	list<Block>::iterator next_it = next(it);
@@ -461,6 +530,7 @@ void	Calc::operation()
 
 void	Calc::levelDown()
 {
+	//cout << __FUNCTION__ << endl;
 	bool	rhsIsLower;
 	bool	lhsIsLower;
 	list<Block>::iterator it = _blocks.begin();
@@ -491,42 +561,66 @@ void	Calc::levelDown()
 
 void	Calc::coutAnswer() const
 {
-	cout << "La reponse est: " << _blocks.begin()->getRhnum() << endl;
+	cout << GREEN << "La reponse est: " << _blocks.begin()->getRhnum() << COLORDEF << endl;
 }
 
 void	Calc::coutDemarche()
 {
-	list<Block>::iterator last_it;
-	list<Block>::iterator next_it;
-
-	int level_offset;
+	//cout << __FUNCTION__ << endl;
+	//list<Block>::iterator prev_it;
+	//list<Block>::iterator next_it;
+	//int level_offset;
+	int prevLevel = 0;
 	
+	//coutBlocks();
+	cout << BLUE << "  ";
 	for (list<Block>::iterator it = _blocks.begin(); it != _blocks.end(); it++)
 	{
 		if (it != _blocks.begin())
-		{
-			next_it = prev(it);
-			level_offset = 0;
-			if (it->getOp() >= OP_SQR)
-				level_offset++;
-			while (next_it->getLevel() + level_offset != it->getLevel())
-			{
-				if (next_it->getLevel() + level_offset < it->getLevel())
-				{
-					level_offset++;
-					cout << "( ";
-				}
-				else
-				{
-					level_offset--;
-					cout << ") ";
-				}
-			}
-		}
+			prevLevel = prev(it)->getLevel();
+		if (it != _blocks.begin() && prev(it)->getOp() >= OP_SQR)
+			demarcheParenthese(prevLevel + 1, it->getLevel());
+		else
+			demarcheParenthese(prevLevel, it->getLevel());
 		if (it->getOp() == OP_NONE)
 			cout << it->getRhnum() << " ";
 		else
 			cout << _operator_list[it->getOp()] << " ";
+		if (next(it) == _blocks.end() && it->getLevel() > 0)
+			demarcheParenthese(it->getLevel(), 0);
 	}
-	cout << endl;
+	cout << COLORDEF << endl;
+}
+
+void	Calc::demarcheParenthese(const int& fromLevel, const int& toLevel)
+{
+	int level_offset = 0;
+	while (fromLevel + level_offset != toLevel)
+	{
+		if (fromLevel < toLevel)
+		{
+			level_offset++;
+			cout << "( ";
+		}
+		else
+		{
+			level_offset--;
+			cout << ") ";
+		}
+	}
+}
+
+void	Calc::coutBlocks()
+{
+	int index = -1;
+	for (list<Block>::iterator it = _blocks.begin(); it != _blocks.end(); it++)
+	{
+		index++;
+		cout << "index:" << index 
+				<< " OP:" << it->getOp() 
+				<< " level:" << it->getLevel()
+				<< " Rhsnum:" << it->getRhnum()
+				<< " spaceBefore:" << it->getSpaceBefore() << endl;
+	}
+	sleep(1);
 }

@@ -5,6 +5,8 @@
 # include <list>
 # include <stdlib.h>
 # include <cmath>
+# include <string>
+# include <unistd.h>
 
 # include "../../include/colors.hpp"
 # include "../Block/Block.hpp"
@@ -57,10 +59,13 @@ private:
 	void		operation();
 	void		levelDown();
 	void		coutDemarche();
+	void		demarcheParenthese(const int& fromLevel, const int& toLevel);
 	int			higherLevel();
 	list<Block>::iterator	getHigherOperation();
 
 	void		coutAnswer() const;
+
+	void		coutBlocks();
 
 public:
 				Calc();
