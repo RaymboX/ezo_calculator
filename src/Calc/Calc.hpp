@@ -24,7 +24,6 @@ private:
 	block_t		_blocks;
 	
 	static const string	_operator_list[NB_OP_LIST];
-	static bool	_demarche;
 
 				Calc(const Calc& rhs);
 	Calc&		operator=(const Calc& rhs);
@@ -32,6 +31,7 @@ private:
 
 	void		intro() const;
 	void		help() const;
+	void		ezo() const;
 	void		shutDown() const;
 
 	void		clearBlocks();
@@ -61,7 +61,6 @@ private:
 	void		levelDown();
 	void		coutDemarche();
 	void		demarcheParenthese(const int& fromLevel, const int& toLevel);
-	int			higherLevel();
 	list<Block>::iterator	getHigherOperation();
 
 	void		coutAnswer() const;
