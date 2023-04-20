@@ -99,6 +99,8 @@ void	Calc::calculatorLoop()
 				{cerr << RED << e.what() << COLORDEF <<endl;}
 			catch(const CalcException::NonRealExcep& e) 
 				{cerr << RED << e.what() << COLORDEF <<endl;}
+			catch(const exception& e)
+				{cerr << RED << e.what() << COLORDEF <<endl;}
 		}
 		clearBlocks();
 	}
@@ -552,7 +554,7 @@ void	Calc::levelDown()
 
 void	Calc::coutAnswer() const
 {
-	cout << GREEN << "La reponse est: " << _blocks.begin()->getRhnum() << COLORDEF << endl;
+	cout << GREEN << "La reponse est: " <<  _blocks.begin()->getRhnum() << COLORDEF << endl;
 }
 
 void	Calc::coutDemarche()
