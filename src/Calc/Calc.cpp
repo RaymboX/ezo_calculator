@@ -376,10 +376,16 @@ void	Calc::addParentheseMultiplication()
 
 void	Calc::ParseNegativeNumber()
 {
-	for (list<Block>::iterator it = _blocks.begin(); next(it) != _blocks.end(); it++)
+	int index = 0;
+	for (list<Block>::iterator it = _blocks.begin(); it != _blocks.end() && next(it) != _blocks.end(); it++)
 	{
+/* 		cout << "index it:" << index
+			<< " it->getOp():" << it->getOp()
+			<< " next_it->getOp():" << next(it)->getOp()
+			<< " it->getLevel():" << it->getLevel()
+			<< " next_it->getLevel():" << next(it)->getLevel() << endl; */
 		if (it->getOp() == OP_SUB)
-		{ 
+		{
 			if (next(it)->getSpaceBefore() == false
 				&& (it == _blocks.begin() 
 					|| prev(it)->getLevel() < it->getLevel()
@@ -387,12 +393,14 @@ void	Calc::ParseNegativeNumber()
 				&& (next(it)->getOp() == OP_NONE || next(it)->getOp() >= OP_SQR)
 				&& it->getLevel() == next(it)->getLevel())
 			{
+				//cout << "pass condition" << endl;
 				if (next(it)->getOp() == OP_NONE)
 					negativeNumMerge(it);
 				else if (next(it)->getOp() >= OP_SQR)
 					sqrtmMerge(it);
 			}
 		}
+		index++;
 	}
 }
 
