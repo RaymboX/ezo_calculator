@@ -1,10 +1,6 @@
 #ifndef EZO_CALCULATOR
 # define EZO_CALCULATOR
 
-# include <iostream>
-# include <list>
-# include <stdlib.h>
-
 # define NB_OP_LIST 8
 
 enum operator_e

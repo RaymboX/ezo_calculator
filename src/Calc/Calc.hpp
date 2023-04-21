@@ -22,56 +22,60 @@ class Calc
 private:
 	int			_ans;
 	block_t		_blocks;
-	
 	static const string	_operator_list[NB_OP_LIST];
 
-				Calc(const Calc& rhs);
-	Calc&		operator=(const Calc& rhs);
+//01_ROUTINE####################################################################
 
+	void		routine();
+	void		calculatorLoop();
+	string		getUserInput();
+	void		trimSpaceFB(string& command_ref);
+	void		clearBlocks();
+	void		coutAnswer() const;
+	void		coutBlocks();
 
+//02_TEXT#######################################################################
+
+	bool		textCommand(const string& command) const;
 	void		intro() const;
 	void		help() const;
 	void		ezo() const;
 	void		shutDown() const;
 
-	void		clearBlocks();
+//03_PARSING####################################################################
 
-	void		calculatorLoop();
-
-	bool		textCommand(const string& command) const;
-
-	void		trimSpaceFB(string& command_ref);
-
-
+	void		parsing(const string& command);
 	void		validParenthese(const string& command) const;
-	void		skipSpace(const string& command, size_t& i_ref);
 	void		tokenization(const string& command);
 	bool		isParenthese(const string& command, int& level_ref, size_t& i_ref);
 	bool		isOperator(const string& command, int& level_ref, size_t& i_ref);
 	bool		isAns(const string& command, const int& level, size_t& i_ref);
 	bool		isNumber(const string& command, const int& level, size_t& i_ref);
-	void		tokenParsing();
+	void		skipSpace(const string& command, size_t& i_ref);
 	void		addParentheseMultiplication();
 	void		ParseNegativeNumber();
+	void		negativeParenthese(list<Block>::iterator it);
 	void		sqrtmMerge(list<Block>::iterator it);
 	void		negativeNumMerge(list<Block>::iterator it);
-	void		negativeParenthese(list<Block>::iterator it);
-	void		calculationLoop();
-	void		operation();
-	void		levelDown();
-	void		coutDemarche();
-	void		demarcheParenthese(const int& fromLevel, const int& toLevel);
+	void		tokenParsing();
+
+//04_CALCULATION################################################################
+
+	void					calculationLoop();
+	void					operation();
 	list<Block>::iterator	getHigherOperation();
+	void					coutDemarche();
+	void					demarcheParenthese(const int& fromLevel, const int& toLevel);
+	void					levelDown();
 
-	void		coutAnswer() const;
-
-	void		coutBlocks();
+//CANONICAL FORM################################################################
+				Calc(const Calc& rhs);
+	Calc&		operator=(const Calc& rhs);
 
 public:
 				Calc();
 	virtual		~Calc();
 
-	void		routine();
 };
 
 #endif
