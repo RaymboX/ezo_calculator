@@ -80,6 +80,6 @@ On peut inscrire
 * J’aurais pu faire plus mais je me suis mis une limite dès le départ et outre la démarche et un petit easter egg, j’ai respecté les objectifs que je trouvais réaliste de produire au départ.
 
 
-# Architecture
+# Architecture, fonctionnement et démonstration
 
-<iframe style="border:none" width="800" height="450" src="https://whimsical.com/embed/AyLnjBewy9n3qKgAehcmjW"></iframe>
+https://whimsical.com/ezo-calculator-AyLnjBewy9n3qKgAehcmjW
