@@ -1,14 +1,14 @@
 # Ezo - Code Golf: Calculatrice par chaîne de caractères
 
-Cette exercice m'a été fourni par EZO comme test technique en vue d'une entrevue technique.
+Cet exercice m'a été fourni par EZO comme test en prévision d'une entrevue technique.
 
-# Réglements
+# Réglements fournis par Ezo
 
 Vous devez créer une application qui évalue une chaîne de caractères, comme si elle avait été entrée dans une calculatrice. Votre programme doit accepter une entrée et produire une réponse juste en sortie.
 
 Le programme doit:
 * Être écrit dans le langage orienté-objet de votre choix
-* Authoriser les nombres à virgule flotante et les nombres négatifs
+* Autoriser les nombres à virgule flottante et les nombres négatifs
 * Supporter **au moins** les opérateurs de base (+, -, * et /)
 * Supporter un ou plusieurs espaces entre les opérateurs et les nombres
 * Respecter la priorité des opérateurs
@@ -49,19 +49,25 @@ La ezoCalc couvre les fonctionnalités suivantes:
 * La priorité des parenthèses et opérations est respectées
 * Si vous ne mettez pas d'opérateur devant ou après une parenthèse, l'opération sera considéré une multiplication
 * Vous pouvez utiliser < ans > pour récupérer le dernier résultat valide
-* La démarche des opérations est affiché
+* La démarche des opérations est affichée
+* Des exceptions sont lancés en cas d'erreurs de syntax, de division par zéro, de nombre non réel (racine carrée nombre négatif) et de nombre trop grand pour un float.
+
 
 On peut inscrire 
 * HELP : Inscrit les informations d'utilisation
 * QUIT ou EXIT : Pour quitter
 
+## Makefile
+
+* 
+Intégration de tests unitaires (doctest)
 
 # Défis personnels
 
 ## Strategie de parsing : 
-* Au départ elle était différente mais apportait beaucoup de problème de parsing. J’ai changé de strategie ce qui m’a aussi permi d’ajouter la démarche
+* Au départ elle était différente mais apportait beaucoup de problème de parsing. J’ai changé de stratégie ce qui m’a aussi permis d’ajouter la démarche
 
-## Les sqrt
+## L'implantation de la racine carrée -> sqrt()
 * Les racines carrée ne sont pas des nombres mais se comporte comme tel dans la situation des nombres négatifs. 
 * Lors des opérations, elle considéré comme des opérations mais différente
 * Lors du tokenparsing, elles ne sont pas des nombres et ne sont pas des opérations
@@ -71,15 +77,34 @@ On peut inscrire
 * Au départ, tokenParsing traitait les nombres négatifs en exception. C’est devenu très compliqué à gérer. La fonction parseNegativeNumber a simplifié le processus.
 
 ## Makefile
-* Je n’avais jamais vraiment utiliser les wildcards jusqu’à présent. Je me suis inspirer du makefile de notre projet en cours à l’école pour l’implanter dans celui-ci.
+* Je n’avais jamais vraiment utilisé les wildcards jusqu’à présent. Je me suis inspiré du Makefile de notre projet en cours à l’école pour l’implanter dans celui-ci.
 
 ## Test unitaire
 * Premier projet seul ou j’implante les tests unitaires.
 
 ## Ne pas m’emballer
-* J’aurais pu faire plus mais je me suis mis une limite dès le départ et outre la démarche et un petit easter egg, j’ai respecté les objectifs que je trouvais réaliste de produire au départ.
-
+* J’aurais pu faire plus mais je me suis mis une limite dès le départ et outre la démarche et un petit easter-egg, j’ai respecté les objectifs que je trouvais réaliste de produire au départ.
 
 # Architecture, fonctionnement et démonstration
 
 https://whimsical.com/ezo-calculator-AyLnjBewy9n3qKgAehcmjW
+
+
+
+## Démonstration
+
+Entrée:  2(3 + -sqrt(4 + 6) ^ 3)
+
+   2 * ( 3 + -sqrt( 10 ) ^ 3 )
+
+  2 * ( 3 + -3.16228 ^ 3 )
+
+  2 * ( 3 + -31.6228 )
+
+  2 * ( -28.6228 )
+
+-57.2456
+
+La reponse est: -57.2456
+
+

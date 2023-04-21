@@ -145,7 +145,7 @@ void	Calc::levelDown()
 			rhsIsLower = false;
 			if (next_it == _blocks.end() || next_it->getLevel() < it->getLevel())
 				rhsIsLower = true;
-			if (lhsIsLower == true && rhsIsLower == true)
+			if (lhsIsLower == true && rhsIsLower == true )
 			{
 				it->setLevel(it->getLevel() - 1);
 				it = _blocks.begin();
