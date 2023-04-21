@@ -3,5 +3,6 @@
 int main(void)
 {
 	Calc calculator;
+	calculator.routine();
 	return 0;
 }

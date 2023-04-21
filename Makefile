@@ -63,9 +63,9 @@ export TOOLS
 SRC_DIR := src
 OBJ_DIR := obj
 HEAD_DIR:= include
+TEST_DIR:= test
 
-#DIRS = $(shell find $(SRC_DIR) -type d -printf '%P\n') #list of file in src
-DIRS = $(shell find $(SRC_DIR) -type d | sed 's/$(SRC_DIR)\///g' | sed -n '1!p')
+DIRS = $(shell find $(SRC_DIR) -type d | sed 's/$(SRC_DIR)\///g' | sed -n '1!p') #list of file in src
 SRC_DIRS := $(addprefix $(SRC_DIR)/, $(DIRS)) #src/DIRS
 OBJ_DIRS := $(addprefix $(OBJ_DIR)/, $(DIRS)) #obj/DIRS
 
@@ -76,6 +76,10 @@ OBJS = $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS)) #all srcs.cpp are n
 
 HEADERS = $(wildcard $(HEAD_DIR)/*.hpp) #in include
 HEADERS += $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.hpp)) #in class
+
+SRCS_TEST = $(wildcard $(TEST_DIR)/*.cpp) #fait la liste des testcase
+SRCS_TEST += $(SRCS)	#Ajoute les SRCS
+SRCS_TEST := $(filter-out $(SRC_DIR)/main.cpp, $(SRCS_TEST)) #enleve le main.cpp
 
 #SYSTEM VAR---------------------------------------------------------------------
 
@@ -124,6 +128,7 @@ clean:
 
 fclean: clean
 			@$(RM) $(NAME)
+			@$(RM) $(NAME)_test
 			@$(RM) $(NAME)_debug
 			@$(RM) $(NAME)_debug.dSYM
 			@echo "$RExecutable $(NAME) deleted$W"
@@ -141,9 +146,19 @@ leak:
 			$(LEAK_CMD) ./$(NAME)
 .PHONY: leak
 
-test:
-			
+test: fclean
+			@$(CC) -D UTEST $(CFLAGS) $(SRCS_TEST) -o $(NAME)_test
+			@echo "$GTest compiled....\n$W"
+			./$(NAME)_test
+			@$(RM) $(NAME)_test
+			@echo "$RExecutable $(NAME)_test deleted$W"
 .PHONY: test
+
+run: all
+	@./$(NAME)
+
+rrun: re run
+.PHONY: rrun
 
 valgrind:
 			$(VALGRIND_CMD) ./$(NAME)

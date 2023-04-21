@@ -1,5 +1,5 @@
 #include "Calc.hpp"
-
+//STATIC DECLARATION############################################################
 const string	Calc::_operator_list[NB_OP_LIST] = 
 {
 	"",
@@ -12,9 +12,16 @@ const string	Calc::_operator_list[NB_OP_LIST] =
 	"-sqrt("
 };
 
+//CANONICAL FORM################################################################
 
-Calc::Calc(): _ans(0)	{routine();}
+Calc::Calc(): _ans(0)	{}
 Calc::~Calc()			{clearBlocks();}
+
+//GET/SET/TER###################################################################
+
+const float&	Calc::getAns() const 			{return _ans;}
+void			Calc::setAns(const float& ans)	{_ans = ans;}
+
 
 //Main of calc
 void	Calc::routine()

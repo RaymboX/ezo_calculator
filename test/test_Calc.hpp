@@ -1,35 +1,29 @@
-#ifndef CALC_HPP
-# define CALC_HPP
+#ifndef TEST_CALC_HPP
+# define TEST_CALC_HPP
 
-# include <iostream>
-# include <list>
-# include <stdlib.h>
-# include <cmath>
-# include <string>
-# include <unistd.h>
-
-# include "../../include/colors.hpp"
-# include "../Block/Block.hpp"
-# include "CalcException.hpp"
-# include "../../include/ezo_calculator.hpp"
-
-using namespace std;
-
-typedef	list<Block> block_t;
-
-# ifdef UTEST
-#  include "../../test/test_Calc.hpp"
-# else
+# include "../src/Calc/Calc.hpp"
 
 class Calc
 {
-private:
+public:
 	float		_ans;
 	block_t		_blocks;
 	static const string	_operator_list[NB_OP_LIST];
 
+//CANONICAL FORM################################################################
+				Calc();
+				Calc(const Calc& rhs);
+	Calc&		operator=(const Calc& rhs);
+	virtual		~Calc();
+
+//GET/SET/TER###################################################################
+
+	const float&	getAns() const;
+	void			setAns(const float& ans);
+
 //01_ROUTINE####################################################################
 
+	void		routine();
 	void		calculatorLoop();
 	string		getUserInput();
 	void		trimSpaceFB(string& command_ref);
@@ -71,23 +65,6 @@ private:
 	void					demarcheParenthese(const int& fromLevel, const int& toLevel);
 	void					levelDown();
 
-//CANONICAL FORM################################################################
-				Calc(const Calc& rhs);
-	Calc&		operator=(const Calc& rhs);
-
-public:
-				Calc();
-	virtual		~Calc();
-
-	void		routine();
-
-//GET/SET/TER###################################################################
-
-	const float&	getAns() const;
-	void			setAns(const float& ans);
-
 };
-
-# endif
 
 #endif
