@@ -105,7 +105,6 @@ bool	Calc::isAns(const string& command, const int& level, size_t& i_ref)
 {
 	if (command.substr(i_ref, 3) == "ans")
 	{
-		//cout << "token ans" << endl;
 		_blocks.back().setNum(_ans);
 		_blocks.back().setOp(OP_NONE);
 		_blocks.back().setLevel(level);
@@ -173,7 +172,7 @@ void	Calc::addParentheseMultiplication()
 	{
 		next_it = next(it);
 		if (it->getOp() == OP_NONE 
-				&& (next_it->getOp() == OP_NONE || next_it->getOp() >= OP_SQR || next_it->getOp() == OP_SUB)
+				&& (next_it->getOp() == OP_NONE || next_it->getOp() >= OP_SQR)
 				&& it->getLevel() != next_it->getLevel())
 		{
 			Block newMultBlock;
@@ -261,10 +260,13 @@ void	Calc::tokenParsing()
 	while (next(it) != _blocks.end() && it != _blocks.end())
 	{
 		if ((it->getOp() == OP_NONE 
-				&& (prev(it)->getOp() == OP_NONE || next(it)->getOp() == OP_NONE))
-			|| (it->getOp() > OP_NONE && it->getOp() < OP_SQR
+				&& ((prev(it)->getOp() == OP_NONE && it->getLevel() == prev(it)->getLevel()) 
+					|| (next(it)->getOp() == OP_NONE && it->getLevel() == next(it)->getLevel()))))
+			throw CalcException::SyntaxExcep();
+			
+		if (it->getOp() > OP_NONE && it->getOp() < OP_SQR
 				&& ((prev(it)->getOp() > OP_NONE)
-					|| (next(it)->getOp() > OP_NONE && next(it)->getOp() < OP_SQR))))
+					|| (next(it)->getOp() > OP_NONE && next(it)->getOp() < OP_SQR)))
 			throw CalcException::SyntaxExcep();
 		it++;
 	}

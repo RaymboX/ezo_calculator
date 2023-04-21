@@ -30,6 +30,8 @@ string	good_command[] = {
 	"2^2^3",
 	"((2+ 3)^2)/5",
 	"(4*sqrt(16 ))/(2 +2)",
+	"2(4 + 5) - 4",
+	"2(3 + -sqrt(4 + 3) ^ (1 + 1) -3)4"
 };
 size_t good_command_size = sizeof(good_command)/sizeof(good_command[0]);
 
@@ -103,6 +105,7 @@ TEST_CASE("Calc::parsing")
 			catch (const std::exception& e)
 			{
 				MESSAGE("Error :" << e.what() << " ---- case: " << good_command[i]);
+				calculator.coutBlocks();
 			}
 			calculator.clearBlocks();
         }
