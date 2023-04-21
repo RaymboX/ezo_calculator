@@ -74,21 +74,17 @@ On peut inscrire
 
 ## L'implantation de la racine carrée -> sqrt()
 * Les racines carrée ne sont pas des nombres mais se comporte comme tel dans la situation des nombres négatifs. 
-* Lors des opérations, elle considéré comme des opérations mais différente
-* Lors du tokenparsing, elles ne sont pas des nombres et ne sont pas des opérations
-* Problème restant non traité: Lorsque deux sqrt() sont mise côte a côte, elles une multiplication est ajouté. Pourrait être réglé mais je trouvais l’idée bonne aussi. (bug → feature)
+* Lors des opérations, elle considéré comme des opérations mais traitée de façon différente
+* Lors du parsing des tokens, elles n'est pas considérée comme un nombre ou commen une opération
 
 ## Les doubles opérations ayant des opérations OP_SUB et OP_SQR  
 * Au départ, tokenParsing traitait les nombres négatifs en exception. C’est devenu très compliqué à gérer. La fonction parseNegativeNumber a simplifié le processus.
 
-## Makefile
-* Je n’avais jamais vraiment utilisé les wildcards jusqu’à présent. Je me suis inspiré du Makefile de notre projet en cours à l’école pour l’implanter dans celui-ci.
-
 ## Test unitaire
-* Premier projet seul ou j’implante les tests unitaires.
+* Premier projet personnel où j’implante les tests unitaires.
 
 ## Ne pas m’emballer
-* J’aurais pu faire plus mais je me suis mis une limite dès le départ et outre la démarche et un petit easter-egg, j’ai respecté les objectifs que je trouvais réaliste de produire au départ.
+* J’aurais pu m'emballer et en faire plus mais je me suis fixé une limite dès le départ et outre la démarche et un petit easter-egg, j’ai respecté les objectifs que je trouvais réaliste de produire au départ.
 
 # Architecture, fonctionnement et démonstration
 
