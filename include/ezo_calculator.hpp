@@ -17,6 +17,7 @@ enum operator_e
 
 #include "colors.hpp"
 #include "../src/Block/Block.hpp"
+#include "../src/Calc/CalcException.hpp"
 #include "../src/Calc/Calc.hpp"
 
 #endif

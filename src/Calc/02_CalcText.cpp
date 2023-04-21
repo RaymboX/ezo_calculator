@@ -19,8 +19,11 @@ bool	Calc::textCommand(const string& command) const
 void	Calc::intro() const
 {
 	cout << PURPLE << "Bonjour et bienvenue sur la calculatrice RaymboX pour EZO" << endl
-		<< "Pour de l'aide, inscrivez <HELP>, pour quitter <QUIT> ou <EXIT>" << COLORDEF << endl;
+		<< "Pour de l'aide, inscrivez <HELP>, pour quitter <QUIT> ou <EXIT>"
+		<< COLORDEF << endl;
 }
+
+
 
 //aide sur les fonctions disponibles
 void	Calc::help() const
@@ -46,7 +49,9 @@ void	Calc::ezo() const
 //message fermeture du programme
 void	Calc::shutDown() const
 {
-	cout << endl << PURPLE << "Merci d'avoir utilisé la calculatrice RaymboX pour EZO. Au plaisir!" << endl;
+	cout << PURPLE 
+		<< "Merci d'avoir utilisé la calculatrice RaymboX pour EZO. Au plaisir!" 
+		<< endl << endl;
 }
 
 //message de la reponse

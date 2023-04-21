@@ -2,15 +2,11 @@
 # define CALC_HPP
 
 # include <iostream>
-# include <list>
-# include <stdlib.h>
-# include <cmath>
-# include <string>
-# include <unistd.h>
+# include <list>		//blocks
+# include <cmath>		//sqrt pow
+# include <string>		//stof
+# include <unistd.h>	//sleep
 
-# include "../../include/colors.hpp"
-# include "../Block/Block.hpp"
-# include "CalcException.hpp"
 # include "../../include/ezo_calculator.hpp"
 
 using namespace std;

@@ -30,11 +30,11 @@ void	Calc::validParenthese(const string& command) const
 		{
 			level -= 1;
 			if (parentheseVide == true || level < 0)
-				throw CalcException::SyntaxExcep();			
+				throw CalcException::SyntaxExcep();
 		}
 	}
 	if (level != 0)
-		throw CalcException::SyntaxExcep();			
+		throw CalcException::SyntaxExcep();
 }
 
 //Creer les tokens (block) pour chaque opérateurs/nombres

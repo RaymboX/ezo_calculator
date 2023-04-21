@@ -21,63 +21,47 @@ void	Calc::operation()
 	list<Block>::iterator prev_it = prev(it);
 	list<Block>::iterator next_it = next(it);
 	
-	switch	(it->getOp())
+	if (it->getOp() != OP_NONE)
 	{
-		case OP_ADD:
+		if (it->getOp() < OP_SQR)
 		{
-			prev_it->setNum(prev_it->getNum() + next_it->getNum());
-			_blocks.erase(next_it);
-			_blocks.erase(it); 
-			break;
+			switch	(it->getOp())
+			{
+				case OP_ADD:
+					prev_it->setNum(prev_it->getNum() + next_it->getNum());
+					break;
+
+				case OP_SUB:
+					prev_it->setNum(prev_it->getNum() - next_it->getNum());
+					break;
+
+				case OP_MUL:
+					prev_it->setNum(prev_it->getNum() * next_it->getNum());
+					break;
+
+				case OP_DIV:
+					if (next_it->getNum() == 0)
+						throw CalcException::Divide0Excep();
+					prev_it->setNum(prev_it->getNum() / next_it->getNum());
+					break;
+
+				case OP_POW:
+					prev_it->setNum(pow(prev_it->getNum(), next_it->getNum()));
+					break;
+			}
+			_blocks.erase(it);
 		}
-		case OP_SUB:
-		{
-			prev_it->setNum(prev_it->getNum() - next_it->getNum());
-			_blocks.erase(next_it);
-			_blocks.erase(it); 
-			break;
-		}
-		case OP_MUL:
-		{
-			prev_it->setNum(prev_it->getNum() * next_it->getNum());
-			_blocks.erase(next_it);
-			_blocks.erase(it); 
-			break;
-		}
-		case OP_DIV:
-		{
-			if (next_it->getNum() == 0)
-				throw CalcException::Divide0Excep();
-			prev_it->setNum(prev_it->getNum() / next_it->getNum());
-			_blocks.erase(next_it);
-			_blocks.erase(it); 
-			break;
-		}
-		case OP_POW:
-		{
-			prev_it->setNum(pow(prev_it->getNum(), next_it->getNum()));
-			_blocks.erase(next_it);
-			_blocks.erase(it); 
-			break;
-		}
-		case OP_SQR:
+		else
 		{
 			if (next_it->getNum() < 0)
-				throw CalcException::NonRealExcep();
-			it->setNum(sqrt(next_it->getNum()));
+					throw CalcException::NonRealExcep();
+			if (it->getOp() == OP_SQR)
+				it->setNum(sqrt(next_it->getNum()));
+			else
+				it->setNum(sqrt(next_it->getNum()) * -1);
 			it->setOp(OP_NONE);
-			_blocks.erase(next_it);
-			break;
 		}
-		case OP_SQRM:
-		{
-			if (next_it->getNum() < 0)
-				throw CalcException::NonRealExcep();
-			it->setNum(sqrt(next_it->getNum()) * -1);
-			it->setOp(OP_NONE);
-			_blocks.erase(next_it);
-			break;
-		}
+		_blocks.erase(next_it);
 	}
 }
 
