@@ -59,8 +59,13 @@ On peut inscrire
 
 ## Makefile
 
-* 
-Intégration de tests unitaires (doctest)
+* make run		-> Compile et lance le programme
+* make goal		-> Vulgarisation du but de l'exercice
+* make rules 		-> Ouvre le github des consignes de Ezo
+* make test		-> Lance les tests unitaires
+* make leak		-> Execute le programme avec "leaks -- atExit -- " en premice
+* make valgrind		-> Execute le programme avec "valgrind --leak-check=full " en premice
+* make tools		-> Affiche les outils disponibles (ceci)
 
 # Défis personnels
 
