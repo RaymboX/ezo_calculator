@@ -18,13 +18,13 @@ void	Calc::calculationLoop()
 void	Calc::operation()
 {
 	list<Block>::iterator it = getHigherOperation();
-	list<Block>::iterator prev_it = prev(it);
 	list<Block>::iterator next_it = next(it);
 	
 	if (it->getOp() != OP_NONE)
 	{
 		if (it->getOp() < OP_SQR)
 		{
+			list<Block>::iterator prev_it = prev(it);
 			switch	(it->getOp())
 			{
 				case OP_ADD:
@@ -69,12 +69,10 @@ void	Calc::operation()
 list<Block>::iterator	Calc::getHigherOperation()
 {
 	list<Block>::iterator higherOp = _blocks.begin();
-	int index = -1;
 	for (list<Block>::iterator it = _blocks.begin(); it != _blocks.end(); it++)
 	{
-		index++;
 		if ((it->getOp() != OP_NONE && higherOp->getOp() == OP_NONE)
-				|| ((it->getLevel() > higherOp->getLevel())
+				|| ((it->getLevel() > higherOp->getLevel() && it->getOp() != OP_NONE)
 				|| ((it->getLevel() == higherOp->getLevel()) && (it->getOp() > higherOp->getOp()))))
 			higherOp = it;
 	}
@@ -140,7 +138,8 @@ void	Calc::levelDown()
 			prev_it = prev(it);
 			next_it = next(it);
 			lhsIsLower = false;
-			if (it == _blocks.begin() || prev_it->getLevel() < it->getLevel())
+			if (it == _blocks.begin() 
+				|| (prev_it->getLevel() < it->getLevel() && prev_it->getOp() < OP_SQR))
 				lhsIsLower = true;
 			rhsIsLower = false;
 			if (next_it == _blocks.end() || next_it->getLevel() < it->getLevel())
