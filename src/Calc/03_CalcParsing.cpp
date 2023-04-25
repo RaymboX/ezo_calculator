@@ -171,15 +171,16 @@ void	Calc::addParentheseMultiplication()
 	for (list<Block>::iterator it = _blocks.begin(); next(it) != _blocks.end(); it++)
 	{
 		next_it = next(it);
+		// cases: 5 (1) / 5 (sqrt(1)) / (5) 1
 		if (it->getOp() == OP_NONE 
 				&& (next_it->getOp() == OP_NONE || next_it->getOp() >= OP_SQR)
 				&& it->getLevel() != next_it->getLevel())
 		{
 			Block newMultBlock;
 			newMultBlock.setOp(OP_MUL);
-			if (it->getLevel() < next_it->getLevel())
+			if (it->getLevel() < next_it->getLevel())		// case 5 (1)
 				newMultBlock.setLevel(it->getLevel());
-			else
+			else											// case 1 (5)
 				newMultBlock.setLevel(next_it->getLevel());
 			_blocks.insert(next_it, newMultBlock);
 			it++;
@@ -194,22 +195,23 @@ void	Calc::ParseNegativeNumber()
 	int index = 0;
 	for (list<Block>::iterator it = _blocks.begin(); it != _blocks.end() && next(it) != _blocks.end(); it++)
 	{
-		if (it->getOp() == OP_SUB)
+		if (it->getOp() == OP_SUB) // (it = -)
 		{
+			//cases: -(1 + 1) / -(sqrt(1))
 			if (it == _blocks.begin()
 					&& (next(it)->getOp() == OP_NONE || next(it)->getOp() >= OP_SQR)
 					&& it->getLevel() < next(it)->getLevel())
 				negativeParenthese(it);
-			else if (next(it)->getSpaceBefore() == false
+			else if (next(it)->getSpaceBefore() == false //cases: -2 + 1 / 1 + -2 / 1 + -sqrt(1) / 1 + (-2) / sqrt(-2)
 					&& (it == _blocks.begin() 
 						|| prev(it)->getLevel() < it->getLevel()
 						|| prev(it)->getOp() > OP_NONE)
 					&& (next(it)->getOp() == OP_NONE || next(it)->getOp() >= OP_SQR)
 					&& it->getLevel() == next(it)->getLevel())
 			{
-				if (next(it)->getOp() == OP_NONE)
+				if (next(it)->getOp() == OP_NONE) // cases: -2 + 1 / 1 + -2 / 1 + (-2) / sqrt(-2)
 					negativeNumMerge(it);
-				else if (next(it)->getOp() >= OP_SQR)
+				else if (next(it)->getOp() >= OP_SQR) //case: 1 + -sqrt(1)
 					sqrtmMerge(it);
 			}
 		}
@@ -252,24 +254,29 @@ void	Calc::negativeNumMerge(list<Block>::iterator it)
 void	Calc::tokenParsing()
 {
 	list<Block>::iterator it = _blocks.begin();
+	//cases: * 5 / 5 1  (it = 5)
 	if ((it->getOp() > OP_NONE && it->getOp() < OP_SQR) 
-		|| (next(it) != _blocks.end() && 
-			it->getOp() == OP_NONE && next(it)->getOp() == OP_NONE))
+		|| (next(it) != _blocks.end()
+			&& it->getOp() == OP_NONE && next(it)->getOp() == OP_NONE))
 		throw CalcException::SyntaxExcep();
 	it++;
 	while (next(it) != _blocks.end() && it != _blocks.end())
 	{
+		//cases: 1 5 + 1 / 1 + 5 1 (it = 5)
 		if ((it->getOp() == OP_NONE 
 				&& ((prev(it)->getOp() == OP_NONE && it->getLevel() == prev(it)->getLevel()) 
 					|| (next(it)->getOp() == OP_NONE && it->getLevel() == next(it)->getLevel()))))
 			throw CalcException::SyntaxExcep();
-			
+		
+		//cases: 1 + * 1 / sqrt(* 1) / 1 +(* 1) / 1 * + 1   (it = *)
 		if (it->getOp() > OP_NONE && it->getOp() < OP_SQR
 				&& ((prev(it)->getOp() > OP_NONE)
+					|| (prev(it)->getLevel() < it->getLevel())
 					|| (next(it)->getOp() > OP_NONE && next(it)->getOp() < OP_SQR)))
 			throw CalcException::SyntaxExcep();
 		it++;
 	}
+	//cases: 1 * / 1 + sqrt()
 	if (it->getOp() != OP_NONE && it != _blocks.end())
 		throw CalcException::SyntaxExcep();
 }

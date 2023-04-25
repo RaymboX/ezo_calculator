@@ -8,7 +8,6 @@
 using namespace std;
 
 string	good_command[] = {
-	"",
 	"2",
 	"1234567890",
 	"2+2",
@@ -48,10 +47,13 @@ string	errSyntax_command[] = {
 	"- 2",
 	"3 3",
 	"3 (*) 3",
+	"3 (*2) 4",
 	"- sqrt()",
 	"(3",
 	")(3",
-	"((3)"
+	"((3)",
+	"3 * 4*",
+	"()"
 };
 size_t errSyntax_command_size = sizeof(errSyntax_command)/sizeof(errSyntax_command[0]);
 
