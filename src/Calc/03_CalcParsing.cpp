@@ -24,7 +24,7 @@ void	Calc::validParenthese(const string& command) const
 			parentheseVide = true;
 			level += 1;
 		}
-		else if (isdigit(command.at(i)))
+		else if (isdigit(command.at(i)) || command.substr(i, 3) == "ans")
 			parentheseVide = false;
 		else if (command.at(i) == ')')
 		{
@@ -270,9 +270,9 @@ void	Calc::tokenParsing()
 		
 		//cases: 1 + * 1 / sqrt(* 1) / 1 +(* 1) / 1 * + 1   (it = *)
 		if (it->getOp() > OP_NONE && it->getOp() < OP_SQR
-				&& ((prev(it)->getOp() > OP_NONE)
+				&& (   (prev(it)->getOp() > OP_NONE)
 					|| (prev(it)->getLevel() < it->getLevel())
-					|| (next(it)->getOp() > OP_NONE && next(it)->getOp() < OP_SQR)))
+					|| (next(it)->getOp() > OP_NONE && next(it)->getOp() < OP_SQR)   ))
 			throw CalcException::SyntaxExcep();
 		it++;
 	}
