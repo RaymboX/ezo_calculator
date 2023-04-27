@@ -9,7 +9,7 @@ private:
 	int					_level; 	//Parenthesis level
 	int					_op;		//operator enum number
 	float				_num;		//right hand number (number at right of operator)
-	bool				_spaceBefore;	//if sqrt, check if space before
+	bool				_spaceBefore;	//if sqrt, check if space before + number
 
 public:
 

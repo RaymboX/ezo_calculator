@@ -67,6 +67,11 @@ private:
 	void					demarcheParenthese(const int& fromLevel, const int& toLevel);
 	void					levelDown();
 
+//GET/SET/TER###################################################################
+
+	const float&	getAns() const;
+	void			setAns(const float& ans);
+
 //CANONICAL FORM################################################################
 				Calc(const Calc& rhs);
 	Calc&		operator=(const Calc& rhs);
@@ -76,12 +81,6 @@ public:
 	virtual		~Calc();
 
 	void		routine();
-
-//GET/SET/TER###################################################################
-
-	const float&	getAns() const;
-	void			setAns(const float& ans);
-
 };
 
 # endif
