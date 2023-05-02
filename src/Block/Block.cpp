@@ -28,6 +28,6 @@ const bool&		Block::getSpaceBefore() const			{return _spaceBefore;}
 
 void	Block::setLevel(const int& level)				{_level = level;}
 void	Block::setOp(const int& op)						{_op = op;}
-void	Block::setNum(const float& num)				{_num = num;}
+void	Block::setNum(const float& num)					{_num = num;}
 void	Block::setSpaceBefore(const float& spaceBefore)	{_spaceBefore = spaceBefore;}
 //##############################################################################
